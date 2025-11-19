@@ -10,7 +10,7 @@ project(
 )
 
 option(BUILD_TESTS "Build test" ON)
-option(CPPCHECK "Run CppCheck static code analysis" OFF)
+option(ENABLE_CODE_ANALISYS "Run static code analysis" OFF)
 
 # ---- Include guards ----
 
@@ -38,17 +38,18 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 # ---- Static analisys ----
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  message(STATUS "Clang compiler detected. Integrating clang-tidy")
-  set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
-elseif(CPPCHECK AND CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  message(STATUS "MSVC compiler detected. Integrating Cppcheck")
-  find_program(cppcheck_exe NAMES cppcheck REQUIRED)
-  set(cppcheck_opts --enable=all --inline-suppr --quiet
-                    --suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp
+if(ENABLE_CODE_ANALISYS)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Clang compiler detected. Integrating clang-tidy")
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
+  endif()
+
+  message(STATUS "Integrating Cppcheck")
+  find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
+  set(CMAKE_CXX_CPPCHECK
+      ${CPPCHECK_EXECUTABLE}; # --std=c++23;--enable=all;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
   )
-  set(CMAKE_C_CPPCHECK ${cppcheck_exe} --std=c11 ${cppcheck_opts})
-  set(CMAKE_CXX_CPPCHECK ${cppcheck_exe} --std=c++23 ${cppcheck_opts})
+  message(STATUS "CMAKE_CXX_CPPCHECK: ${CMAKE_CXX_CPPCHECK}")
 endif()
 
 # ---- Create static library ----

@@ -2,13 +2,15 @@
 #include <string>
 
 namespace csl {
-  std::string GetString();
+  std::string getString();
 
-  constexpr int factorial_constexpr(int input) noexcept {
+  constexpr int factorialConstexpr(int input) noexcept {
     if (input < 2) {
       return 1;
     }
 
-    return input * factorial_constexpr(input - 1);
+    return input * factorialConstexpr(input - 1);
   }
+
+  int getNumber() noexcept;
 }  // namespace csl
