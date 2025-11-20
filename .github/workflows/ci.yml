@@ -33,27 +33,21 @@ jobs:
         cpp_compiler: [g++, clang++, cl]
         generator:
           - "Ninja Multi-Config"
-        packaging_maintainer_mode:
-          - ON
-          - OFF
         include:
           - os: windows-latest
             cpp_compiler: cl
             generator: "Visual Studio 17"
             build_type: Release
-            packaging_maintainer_mode: On
 
           - os: ubuntu-latest
             cpp_compiler: g++
             generator: "Unix Makefiles"
             build_type: Release
-            packaging_maintainer_mode: On
 
           - os: ubuntu-latest
             cpp_compiler: clang++
             generator: "Unix Makefiles"
             build_type: Release
-            packaging_maintainer_mode: On
         exclude:
           - os: windows-latest
             cpp_compiler: g++
@@ -77,11 +71,10 @@ jobs:
       with:
         compiler: ${{ matrix.cpp_compiler }}
         build_type: ${{ matrix.build_type }}
-        packaging_maintainer_mode: ${{ matrix.packaging_maintainer_mode }}
         generator: ${{ matrix.generator }}
 
     - name: Install format dependencies
-      if: ${{ matrix.cpp_compiler == 'clang++' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == 'clang++' }}
       run: pip3 install cmake_format==0.6.11 pyyaml
 
     - name: Check CMake style
