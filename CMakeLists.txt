@@ -38,19 +38,18 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 # ---- Static analisys ----
 
-if(ENABLE_CODE_ANALISYS)
+if(ENABLE_CODE_ANALYSIS)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
     set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
+  else()
+    message(STATUS "Integrating Cppcheck")
+    find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
+    set(CMAKE_CXX_CPPCHECK
+        ${CPPCHECK_EXECUTABLE};
+        --std=c++23;--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+    )
   endif()
-
-  message(STATUS "Integrating Cppcheck (works only with ninja generators)")
-  find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
-  set(CMAKE_CXX_CPPCHECK
-      ${CPPCHECK_EXECUTABLE};
-      --std=c++23;--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
-  )
-  message(STATUS "CMAKE_CXX_CPPCHECK: ${CMAKE_CXX_CPPCHECK}")
 endif()
 
 # ---- Create static library ----
@@ -77,17 +76,6 @@ endif()
 # ---- Tests ----
 if(BUILD_TESTS)
   add_subdirectory(test)
-endif()
-
-if(${PROJECT_NAME}_BUILD_FUZZ_TESTS)
-  message(
-    AUTHOR_WARNING
-      "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html"
-  )
-  if(NOT ${PROJECT_NAME}_ENABLE_SANITIZER_ADDRESS AND NOT ${PROJECT_NAME}_ENABLE_SANITIZER_THREAD)
-    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
-  endif()
-  add_subdirectory(fuzz_test)
 endif()
 
 # ---- Create an installable target ----

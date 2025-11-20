@@ -116,7 +116,7 @@ jobs:
         -G "${{matrix.generator}}"
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DENABLE_CODE_ANALISYS=ON
+        -DENABLE_CODE_ANALYSIS=ON
         -DBUILD_TESTS=OFF
         -S ${{ github.workspace }}
 
