@@ -47,7 +47,8 @@ if(ENABLE_CODE_ANALISYS)
   message(STATUS "Integrating Cppcheck")
   find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
   set(CMAKE_CXX_CPPCHECK
-      ${CPPCHECK_EXECUTABLE}; # --std=c++23;--enable=all;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+      ${CPPCHECK_EXECUTABLE};
+      --std=c++23;--enable=all;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
   )
   message(STATUS "CMAKE_CXX_CPPCHECK: ${CMAKE_CXX_CPPCHECK}")
 endif()
