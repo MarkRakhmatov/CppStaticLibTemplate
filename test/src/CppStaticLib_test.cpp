@@ -2,9 +2,11 @@
 
 #include <CppStaticLib/CppStaticLib.hpp>
 #include <string>
+#include <iostream>
+#include <cstdlib>
+#include <exception>
 
-
-int main() {
+void tests() {
   using namespace boost::ut;
 
   "get string"_test = [] {
@@ -23,4 +25,17 @@ int main() {
     static_assert(csl::factorialConstexpr(1) == 1);
     static_assert(csl::factorialConstexpr(2) == 2);
   };
+}
+
+int main() {
+  try {
+    tests();
+  } catch (const std::exception& ex) {
+    std::cout << "exception: "<< ex.what();
+    return EXIT_FAILURE;
+  }
+  catch (...) {
+    std::cout <<"unknown exception";
+    return EXIT_FAILURE;
+  }
 }

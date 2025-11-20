@@ -117,24 +117,13 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DENABLE_CODE_ANALYSIS=ON
-        -DBUILD_TESTS=OFF
+        -DBUILD_TESTS=ON
         -S ${{ github.workspace }}
 
     - name: Build
       run: |
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
-
-    - name: Configure tests
-      run: >
-        cmake
-        -B ${{ steps.strings.outputs.build-output-dir }}/test
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}/test
-
-    - name: Build tests
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }}/test --config ${{ matrix.build_type }}
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}/test

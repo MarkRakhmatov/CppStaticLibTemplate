@@ -19,7 +19,7 @@ project(
 )
 
 option(BUILD_TESTS "Build test" ON)
-option(ENABLE_CODE_ANALISYS "Run static code analysis" OFF)
+option(ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
 
 # ---- Include guards ----
 
