@@ -44,11 +44,11 @@ if(ENABLE_CODE_ANALISYS)
     set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
   endif()
 
-  message(STATUS "Integrating Cppcheck")
+  message(STATUS "Integrating Cppcheck (works only with ninja generators)")
   find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
   set(CMAKE_CXX_CPPCHECK
       ${CPPCHECK_EXECUTABLE};
-      --std=c++23;--enable=all;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+      --std=c++23;--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
   )
   message(STATUS "CMAKE_CXX_CPPCHECK: ${CMAKE_CXX_CPPCHECK}")
 endif()
