@@ -12,8 +12,10 @@ int main() {
     expect(csl::getString() == std::string("cpp static lib example"));
   };
 
-  "get number"_test = [] {
-    expect(csl::getNumber() == 2);
+  "factorial"_test = [] {
+    expect(csl::factorial(0) == 1);
+    expect(csl::factorial(1) == 1);
+    expect(csl::factorial(2) == 2);
   };
 
   "factorial_constexpr"_test = [] {

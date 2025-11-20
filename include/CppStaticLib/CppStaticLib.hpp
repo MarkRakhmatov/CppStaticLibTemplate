@@ -12,5 +12,5 @@ namespace csl {
     return input * factorialConstexpr(input - 1);
   }
 
-  int getNumber() noexcept;
+  int factorial(int input) noexcept;
 }  // namespace csl

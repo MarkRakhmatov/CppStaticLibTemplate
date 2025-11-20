@@ -1,13 +1,17 @@
+#include <string>
 #include "CppStaticLib/CppStaticLib.hpp"
+
 
 namespace csl {
 
   std::string getString() { return "cpp static lib example"; }
 
-  int getNumber() noexcept
-  {
-    int a[3] = {0, 1, 2};
-    return a[3];
+  int factorial(int input) noexcept {
+    if (input < 2) {
+      return 1;
+    }
+
+    return input * factorial(input - 1);
   }
 
 }  // namespace csl

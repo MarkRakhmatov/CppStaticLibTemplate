@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.14...3.22)
 
 # ---- Project ----
 
+# Only set the cxx_standard if it is not set by someone else
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+endif()
+
+# strongly encouraged to enable this globally to avoid conflicts between -Wpedantic being enabled
+# and -std=c++20 and -std=gnu++20 for example when compiling with PCH enabled
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Note: update this to your new project's name and version
 project(
   CppStaticLib
@@ -47,7 +56,7 @@ if(ENABLE_CODE_ANALYSIS)
     find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
     set(CMAKE_CXX_CPPCHECK
         ${CPPCHECK_EXECUTABLE};
-        --std=c++23;--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+        --std=c++${CMAKE_CXX_STANDARD};--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
     )
   endif()
 endif()
@@ -55,7 +64,6 @@ endif()
 # ---- Create static library ----
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
 
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
