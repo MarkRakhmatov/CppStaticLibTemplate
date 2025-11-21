@@ -1,6 +1,6 @@
 # CppStaticLib
 
-[![CMake on multiple platforms](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/cmake-multi-platform.yml)
+[![ci](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/ci.yml/badge.svg)](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/ci.yml)
 
 ## About
 C++ 20 static library template
