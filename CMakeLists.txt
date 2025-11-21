@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.14...3.22)
 
 # ---- Project ----
 
+# Only set the cxx_standard if it is not set by someone else
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+endif()
+
+# strongly encouraged to enable this globally to avoid conflicts between -Wpedantic being enabled
+# and -std=c++20 and -std=gnu++20 for example when compiling with PCH enabled
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 # Note: update this to your new project's name and version
 project(
   CppStaticLib
@@ -10,6 +19,7 @@ project(
 )
 
 option(BUILD_TESTS "Build test" ON)
+option(ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
 
 # ---- Include guards ----
 
@@ -35,10 +45,25 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+# ---- Static analisys ----
+
+if(ENABLE_CODE_ANALYSIS)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Clang compiler detected. Integrating clang-tidy")
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
+  else()
+    message(STATUS "Integrating Cppcheck")
+    find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
+    set(CMAKE_CXX_CPPCHECK
+        ${CPPCHECK_EXECUTABLE};
+        --std=c++${CMAKE_CXX_STANDARD};--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+    )
+  endif()
+endif()
+
 # ---- Create static library ----
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 23)
 
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
@@ -59,17 +84,6 @@ endif()
 # ---- Tests ----
 if(BUILD_TESTS)
   add_subdirectory(test)
-endif()
-
-if(${PROJECT_NAME}_BUILD_FUZZ_TESTS)
-  message(
-    AUTHOR_WARNING
-      "Building Fuzz Tests, using fuzzing sanitizer https://www.llvm.org/docs/LibFuzzer.html"
-  )
-  if(NOT ${PROJECT_NAME}_ENABLE_SANITIZER_ADDRESS AND NOT ${PROJECT_NAME}_ENABLE_SANITIZER_THREAD)
-    message(WARNING "You need asan or tsan enabled for meaningful fuzz testing")
-  endif()
-  add_subdirectory(fuzz_test)
 endif()
 
 # ---- Create an installable target ----

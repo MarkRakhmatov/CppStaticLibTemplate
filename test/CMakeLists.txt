@@ -2,6 +2,11 @@ cmake_minimum_required(VERSION 3.15...3.23)
 
 set(TESTED_PROJECT_NAME CppStaticLib)
 
+# Only set the cxx_standard if it is not set by someone else
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+endif()
+
 project(${TESTED_PROJECT_NAME}Tests LANGUAGES CXX)
 
 # ---- Options ----
@@ -18,7 +23,12 @@ include(../cmake/tools.cmake)
 include(../cmake/CPM.cmake)
 
 if(TEST_INSTALLED_VERSION)
-  find_package(${TESTED_PROJECT_NAME} REQUIRED)
+  find_package(${TESTED_PROJECT_NAME} CONFIG REQUIRED) # for intro, project_options, ...
+
+  if(NOT TARGET ${TESTED_PROJECT_NAME}_options)
+    message(FATAL_ERROR "Required config package not found!")
+    return() # be strictly paranoid for Template Janitor github action! CK
+  endif()
 endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
@@ -31,8 +41,8 @@ add_executable(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
 target_link_libraries(${PROJECT_NAME} Boost::ut ${TESTED_PROJECT_NAME})
-target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR}/..)
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 20)
+
+target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
 # enable compiler warnings
 if(NOT TEST_INSTALLED_VERSION)
