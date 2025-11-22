@@ -1,9 +1,9 @@
-# CppStaticLib
+# %%myproject%%
 
-[![ci](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/ci.yml/badge.svg)](https://github.com/MarkRakhmatov/CppStaticLibTemplate/actions/workflows/ci.yml)
+[![ci](https://github.com/%%myorg%%/%%myproject%%/actions/workflows/ci.yml/badge.svg)](https://github.com/%%myorg%%/%%myproject%%/actions/workflows/ci.yml)
 
-## About
-C++ 23 static library template
+## About %%myproject%%
+%%description%%
 
 ### By default:
 * Warnings as errors
