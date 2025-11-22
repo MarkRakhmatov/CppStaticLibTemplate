@@ -30,8 +30,6 @@ jobs:
           - "Unix Makefiles"
         build_type:
           - Debug
-        packaging_maintainer_mode:
-          - OFF
 
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +39,6 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           build_type: ${{ matrix.build_type }}
-          package_maintainer_mode: ${{ matrix.package_maintainer_mode }}
           generator: ${{ matrix.generator }}
 
       - name: Get organization and project name 
@@ -73,7 +70,7 @@ jobs:
       - name: Insert new org and project
         run: |
           # rename the CMake project to match the github project
-          find src include test fuzz_test cmake -type f -exec sed -i "s/myproject/${{ env.NEW_SAFE_PROJECT }}/gi" .github/constants.env CMakeLists.txt Dependencies.cmake ProjectOptions.cmake .github/workflows/ci.yml .github/workflows/codeql-analysis.yml configured_files/config.hpp.in {} +
+          find src include test cmake -type f -exec sed -i "s/CppStaticLibTemplate/${{ env.NEW_SAFE_PROJECT }}/gi" CMakeLists.txt .github/workflows/ci.yml {} +
 
           # Update URL placeholders for project
           sed -i "s|%%myurl%%|${{ fromJson(steps.get_repo_meta.outputs.data).html_url }}|gi" CMakeLists.txt
@@ -82,7 +79,7 @@ jobs:
           sed -i "s/%%myorg%%/${{ env.NEW_ORG }}/g" ${{ env.TEMPLATES_PATH }}/README.md
           sed -i "s/%%myproject%%/${{ env.NEW_PROJECT }}/g" ${{ env.TEMPLATES_PATH }}/README.md
           sed -i "s|%%description%%|${{ fromJson(steps.get_repo_meta.outputs.data).description }}|g" ${{ env.TEMPLATES_PATH }}/README.md
-          mv include/myproject include/${{ env.NEW_SAFE_PROJECT }}
+          mv include/CppStaticLibTemplate include/${{ env.NEW_SAFE_PROJECT }}
           cp ${{ env.TEMPLATES_PATH }}/README.md README.md
 
       - name: Print diff after replacement
@@ -130,7 +127,7 @@ jobs:
 
       - name: Test simple configuration to make sure nothing broke
         run: |
-          cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }} -D${{ env.NEW_SAFE_PROJECT }}_PACKAGING_MAINTAINER_MODE:BOOL=ON
+          cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
           # Build it because we may have broken something in the cpp/hpp files
           cmake --build build
 
@@ -159,8 +156,6 @@ jobs:
           - "Unix Makefiles"
         build_type:
           - Debug
-        packaging_maintainer_mode:
-          - ON
 
     steps:
       - uses: actions/checkout@v3
@@ -170,7 +165,6 @@ jobs:
         with:
           compiler: ${{ matrix.compiler }}
           build_type: ${{ matrix.build_type }}
-          packaging_maintainer_mode: ${{ matrix.packaging_maintainer_mode }}
           generator: ${{ matrix.generator }}
 
       - name: Get organization and project name 
@@ -226,9 +220,9 @@ jobs:
           opencppcoverage: false
 
 
-      - name: Test simple configuration to make sure nothing broke (default compiler,cmake,packaging_maintainer_mode OFF)
+      - name: Test simple configuration to make sure nothing broke (default compiler,cmake)
         run: |
-          cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }} -D${{ env.PROJECT_NAME }}_PACKAGING_MAINTAINER_MODE:BOOL=ON
+          cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
 
       - uses: EndBug/add-and-commit@v9
         # only commit and push if we are a template and project name has changed
