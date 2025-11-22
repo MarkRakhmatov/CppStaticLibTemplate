@@ -118,13 +118,6 @@ jobs:
           gcovr: false
           opencppcoverage: false
 
-      - name: Project Name
-        uses: cardinalby/export-env-action@v2
-        with:
-          envFile: '.github/constants.env'
-
-
-
       - name: Test simple configuration to make sure nothing broke
         run: |
           cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
