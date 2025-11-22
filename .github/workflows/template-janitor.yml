@@ -70,7 +70,7 @@ jobs:
       - name: Insert new org and project
         run: |
           # rename the CMake project to match the github project
-          find src include test cmake -type f -exec sed -i "s/CppStaticLibTemplate/${{ env.NEW_SAFE_PROJECT }}/gi" CMakeLists.txt .github/workflows/ci.yml {} +
+          find src include test cmake -type f -exec sed -i "s/CppStaticLib/${{ env.NEW_SAFE_PROJECT }}/gi" CMakeLists.txt .github/workflows/ci.yml {} +
 
           # Update URL placeholders for project
           sed -i "s|%%myurl%%|${{ fromJson(steps.get_repo_meta.outputs.data).html_url }}|gi" CMakeLists.txt
