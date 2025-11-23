@@ -57,7 +57,9 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 # ---- code coverage ----
 
 if(${TESTED_PROJECT_NAME}_ENABLE_COVERAGE)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
+  message(STATUS "${TESTED_PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
     target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
     target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
   endif()
