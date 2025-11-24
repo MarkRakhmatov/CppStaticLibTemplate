@@ -157,6 +157,9 @@ jobs:
       run: |
         find . -type f -name "*.gcda"
         find . -type f -name "*.gcno"
+        ls -al
+        ls CMakeFiles -al
+        ls CMakeFiles/CppStaticLib.dir/Debug/src/ -al
         gcovr --root ../ --xml-pretty --xml ${{ github.workspace }}/build/coverage.xml --gcov-executable '${{ matrix.gcov_executable }}' -v
     - name: Windows - Coverage
       if: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
