@@ -36,7 +36,7 @@ jobs:
           - Release
           - Debug
         cpp_compiler:
-          - g++
+          - g++-14
           - clang++
           - cl
         generator:
@@ -44,8 +44,8 @@ jobs:
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          - cpp_compiler: g++
-            gcov_executable: gcov
+          - cpp_compiler: g++-14
+            gcov_executable: gcov-14
 
           - cpp_compiler: clang++
             gcov_executable: "llvm-cov gcov"
@@ -56,7 +56,7 @@ jobs:
             build_type: Release
 
           - os: ubuntu-latest
-            cpp_compiler: g++
+            cpp_compiler: g++-14
             generator: "Unix Makefiles"
             build_type: Release
 
@@ -66,7 +66,7 @@ jobs:
             build_type: Release
         exclude:
           - os: windows-latest
-            cpp_compiler: g++
+            cpp_compiler: g++-14
           - os: windows-latest
             cpp_compiler: clang++
           - os: ubuntu-latest
@@ -157,7 +157,7 @@ jobs:
       run: |
         find . -type f -name "*.gcda"
         find . -type f -name "*.gcno"
-        gcovr --object-directory ./build/test/CMakeFiles/CppStaticLibTests.dir/Debug/src/ -v
+        gcovr --object-directory ./build/test/CMakeFiles/CppStaticLibTests.dir/Debug/src/ --gcov-executable '${{ matrix.gcov_executable }}' -v
     - name: Windows - Coverage
       if: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}
