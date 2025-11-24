@@ -65,6 +65,16 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
 
+# ---- code coverage ----
+if(${PROJECT_NAME}_ENABLE_COVERAGE)
+  message(STATUS "${PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
+    target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
+    target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
+  endif()
+endif()
+
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
@@ -82,14 +92,6 @@ if(NOT PROJECT_IS_TOP_LEVEL)
 endif()
 
 # ---- Tests ----
-if(${PROJECT_NAME}_ENABLE_COVERAGE)
-  message(STATUS "${PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
-  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
-    target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
-    target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
-  endif()
-endif()
 
 if(BUILD_TESTS)
   add_subdirectory(test)
