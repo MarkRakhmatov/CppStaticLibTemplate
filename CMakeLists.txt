@@ -65,16 +65,6 @@ endif()
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
 
-# ---- code coverage ----
-if(${PROJECT_NAME}_ENABLE_COVERAGE)
-  message(STATUS "${PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
-  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
-    target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
-    target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
-  endif()
-endif()
-
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
@@ -85,6 +75,16 @@ target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                          $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
+
+# ---- code coverage ----
+if(${PROJECT_NAME}_ENABLE_COVERAGE)
+  message(STATUS "${PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
+    target_compile_options(${PROJECT_NAME} PUBLIC --coverage -O0 -g)
+    target_link_libraries(${PROJECT_NAME} PUBLIC --coverage)
+  endif()
+endif()
 
 # Don't even look at tests if we're not top level
 if(NOT PROJECT_IS_TOP_LEVEL)
