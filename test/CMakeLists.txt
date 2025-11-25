@@ -11,7 +11,7 @@ project(${TESTED_PROJECT_NAME}Tests LANGUAGES CXX)
 
 # ---- Options ----
 
-option(ENABLE_TEST_COVERAGE "Enable test coverage" OFF)
+option(${TESTED_PROJECT_NAME}_ENABLE_COVERAGE "Enable test coverage" OFF)
 option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
 
 # ---- Dependencies ----
@@ -36,7 +36,7 @@ add_executable(${PROJECT_NAME} ${sources})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
-target_link_libraries(${PROJECT_NAME} Boost::ut ${TESTED_PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::ut ${TESTED_PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
@@ -56,7 +56,11 @@ add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 # ---- code coverage ----
 
-if(ENABLE_TEST_COVERAGE)
-  target_compile_options(${PROJECT_NAME} PUBLIC -O0 -g -fprofile-arcs -ftest-coverage)
-  target_link_options(${PROJECT_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
+if(${TESTED_PROJECT_NAME}_ENABLE_COVERAGE)
+  message(STATUS "${TESTED_PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
+    target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
+    target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
+  endif()
 endif()
