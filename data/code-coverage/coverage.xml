@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-04.dtd'>
+<coverage line-rate="1.0" branch-rate="0.75" lines-covered="5" lines-valid="5" branches-covered="3" branches-valid="4" complexity="0.0" timestamp="1764107365" version="gcovr 7.0">
+  <sources>
+    <source>..</source>
+  </sources>
+  <packages>
+    <package name="src" line-rate="1.0" branch-rate="0.75" complexity="0.0">
+      <classes>
+        <class name="CppStaticLib_cpp" filename="src/CppStaticLib.cpp" line-rate="1.0" branch-rate="0.75" complexity="0.0">
+          <methods/>
+          <lines>
+            <line number="7" hits="6" branch="true" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="50%"/>
+              </conditions>
+            </line>
+            <line number="9" hits="4" branch="false"/>
+            <line number="10" hits="4" branch="true" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%"/>
+              </conditions>
+            </line>
+            <line number="11" hits="3" branch="false"/>
+            <line number="14" hits="1" branch="false"/>
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>
