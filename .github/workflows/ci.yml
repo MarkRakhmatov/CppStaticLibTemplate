@@ -141,11 +141,6 @@ jobs:
       run: |
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
         cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
-        find . -type f -name "*.gcda"
-        find . -type f -name "*.gcno"
-        ls -al
-        ls build/CMakeFiles -al
-        ls build/CMakeFiles/CppStaticLib.dir/Debug/src/ -al
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}/test
@@ -160,13 +155,12 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        gcovr --root ../ --xml-pretty --xml ${{ github.workspace }}/build/coverage.xml --gcov-executable '${{ matrix.gcov_executable }}' -v
+        gcovr --root ../ --xml-pretty --xml ${{ github.workspace }}/build/coverage.xml --gcov-executable '${{ matrix.gcov_executable }}'
     - name: Windows - Coverage
       if: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}
       run: |
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
-        dir build
 
     - name: Produce the coverage report
       if: ${{ matrix.build_type == 'Debug'}}
