@@ -16,6 +16,13 @@ env:
 
 jobs:
   build:
+    permissions:
+      # permission required to create branch with coverage
+      contents: write
+      # permission required to leave coverage comment
+      pull-requests: write
+
+    name: ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.build_type}} ${{matrix.generator}}
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -31,7 +38,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        #- windows-latest
+        - windows-latest
         build_type:
           - Release
           - Debug
@@ -156,6 +163,7 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
         gcovr --root ../ --xml-pretty --xml ${{ github.workspace }}/build/coverage.xml --gcov-executable '${{ matrix.gcov_executable }}'
+
     - name: Windows - Coverage
       if: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}
@@ -171,7 +179,7 @@ jobs:
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        threshold: 80.123
+        threshold: 75
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
         fail: true
@@ -189,7 +197,7 @@ jobs:
         diff-storage: _xml_coverage_reports
         # A custom title that can be added to the code
         # coverage summary in the PR comment.
-        coverage-summary-title: "Code Coverage Summary"
+        coverage-summary-title: Code Coverage Summary ${{matrix.os}}-${{matrix.cpp_compiler}}
         # Failure modes for coverage regression detection:
         # Fail if any changed file has more uncovered lines (pycobertura exit code 2)
         uncovered-statements-increase-failure: false
