@@ -93,7 +93,7 @@ endif()
 
 # ---- Tests ----
 
-if(BUILD_TESTS)
+if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(test)
 endif()
 
