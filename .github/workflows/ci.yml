@@ -10,9 +10,14 @@ on:
       - develop
 
 env:
-  CLANG_TIDY_VERSION: "19.1.1"
-  VERBOSE: 1
   PROJECT_NAME: CppStaticLib
+
+  CLANG_COMPILER: clang++
+  CLANG_TIDY_VERSION: "19.1.1"
+
+  GCC_COMPILER: g++-14
+
+  MSVC_COMPILER: cl
 
 jobs:
   build:
@@ -43,41 +48,41 @@ jobs:
           - Release
           - Debug
         cpp_compiler:
-          - g++-14
-          - clang++
-          - cl
+          - ${{ env.GCC_COMPILER }}
+          - ${{ env.CLANG_COMPILER }}
+          - ${{ env.MSVC_COMPILER }}
         generator:
           - "Ninja Multi-Config"
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
-          - cpp_compiler: g++-14
+          - cpp_compiler: ${{ env.GCC_COMPILER }}
             gcov_executable: gcov-14
 
-          - cpp_compiler: clang++
+          - cpp_compiler: ${{ env.CLANG_COMPILER }}
             gcov_executable: "llvm-cov gcov"
 
           - os: windows-latest
-            cpp_compiler: cl
+            cpp_compiler: ${{ env.MSVC_COMPILER }}
             generator: "Visual Studio 17"
             build_type: Release
 
           - os: ubuntu-latest
-            cpp_compiler: g++-14
+            cpp_compiler: ${{ env.GCC_COMPILER }}
             generator: "Unix Makefiles"
             build_type: Release
 
           - os: ubuntu-latest
-            cpp_compiler: clang++
+            cpp_compiler: ${{ env.CLANG_COMPILER }}
             generator: "Unix Makefiles"
             build_type: Release
         exclude:
           - os: windows-latest
-            cpp_compiler: g++-14
+            cpp_compiler: ${{ env.GCC_COMPILER }}
           - os: windows-latest
-            cpp_compiler: clang++
+            cpp_compiler: ${{ env.CLANG_COMPILER }}
           - os: ubuntu-latest
-            cpp_compiler: cl
+            cpp_compiler: ${{ env.MSVC_COMPILER }}
 
     steps:
     - uses: actions/checkout@v4
@@ -97,15 +102,15 @@ jobs:
         generator: ${{ matrix.generator }}
 
     - name: Install format dependencies
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == 'clang++' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.11 pyyaml
 
     - name: Check CMake style
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == 'clang++' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: cmake-format --check ./CMakeLists.txt
 
     - uses: DoozyX/clang-format-lint-action@v0.20
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == 'clang++' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       with:
         source: '.'
         exclude: './third_party ./external'
