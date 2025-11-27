@@ -12,20 +12,11 @@ on:
 env:
   PROJECT_NAME: CppStaticLib
 
+  CLANG_COMPILER: "clang++"
   CLANG_TIDY_VERSION: "19.1.1"
 
 jobs:
-  prep:
-    runs-on: ubuntu-latest
-    outputs:
-      CLANG_COMPILER: ${{ steps.clang.outputs.COMPILER }}
-    steps:
-      - id: clang
-        run: |
-          echo "COMPILER=clang++" >> $GITHUB_OUTPUT
-
   build:
-    needs: prep
     permissions:
       # permission required to create branch with coverage
       contents: write
@@ -54,7 +45,7 @@ jobs:
           - Debug
         cpp_compiler:
           - g++-14
-          - ${{ needs.prep.outputs.CLANG_COMPILER }}
+          - clang++
           - cl
         generator:
           - "Ninja Multi-Config"
@@ -100,15 +91,15 @@ jobs:
         generator: ${{ matrix.generator }}
 
     - name: Install format dependencies
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == inputs.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.11 pyyaml
 
     - name: Check CMake style
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == inputs.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: cmake-format --check ./CMakeLists.txt
 
     - uses: DoozyX/clang-format-lint-action@v0.20
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == inputs.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       with:
         source: '.'
         exclude: './third_party ./external'
@@ -142,8 +133,8 @@ jobs:
         -G "${{matrix.generator}}"
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DENABLE_CODE_ANALYSIS=ON
-        -DBUILD_TESTS=ON
+        -D${{ env.PROJECT_NAME }}_ENABLE_CODE_ANALYSIS=ON
+        -D${{ env.PROJECT_NAME }}_BUILD_TESTS=ON
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
         -S ${{ github.workspace }}
 

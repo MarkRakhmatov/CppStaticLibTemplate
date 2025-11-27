@@ -11,15 +11,15 @@ endif()
 # and -std=c++23 and -std=gnu++23 for example when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Note: update this to your new project's name and version
 project(
   CppStaticLib
   VERSION 1.0
   LANGUAGES CXX
 )
 
-option(BUILD_TESTS "Build test" ON)
-option(ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
+option(${PROJECT_NAME}_BUILD_TESTS "Build test" ON)
+option(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
+option(${PROJECT_NAME}_ENABLE_COVERAGE "" OFF)
 
 # ---- Include guards ----
 
@@ -47,7 +47,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 # ---- Static analisys ----
 
-if(ENABLE_CODE_ANALYSIS)
+if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
     set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
