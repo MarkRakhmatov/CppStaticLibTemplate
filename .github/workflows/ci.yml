@@ -8,28 +8,24 @@ on:
     branches:
       - main
       - develop
-  # workaround to use variables in matrix definition
-  workflow_dispatch:
-    inputs:
-      CLANG_COMPILER:
-        description: "clang compiler binary"
-        required: false
-        default: "clang++"
-      GCC_COMPILER:
-        description: "GCC compiler binary"
-        required: false
-        default: "g++-14"
-      MSVC_COMPILER:
-        description: "MSVC compiler binary"
-        required: false
-        default: "cl"
+
 env:
   PROJECT_NAME: CppStaticLib
 
   CLANG_TIDY_VERSION: "19.1.1"
 
 jobs:
+  prep:
+    runs-on: ubuntu-latest
+    outputs:
+      CLANG_COMPILER: ${{ steps.clang.outputs.COMPILER }}
+    steps:
+      - id: clang
+        run: |
+          echo "COMPILER=clang++" >> $GITHUB_OUTPUT
+
   build:
+    needs: prep
     permissions:
       # permission required to create branch with coverage
       contents: write
@@ -58,7 +54,7 @@ jobs:
           - Debug
         cpp_compiler:
           - g++-14
-          - clang++
+          - ${{ needs.prep.outputs.CLANG_COMPILER }}
           - cl
         generator:
           - "Ninja Multi-Config"
@@ -95,13 +91,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Setup Cache
       uses: ./.github/setup_cache
@@ -149,7 +138,7 @@ jobs:
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        cmake -B ${{ github.workspace }}/build
         -G "${{matrix.generator}}"
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -161,10 +150,10 @@ jobs:
     - name: Build
       run: |
         # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-        cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --verbose
+        cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }} --verbose
 
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}/test
+      working-directory: ${{ github.workspace }}/build/test
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
