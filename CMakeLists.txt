@@ -51,6 +51,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
   # Skip linting for all files in the _deps directory
+  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/_deps")
   set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps" PROPERTY SKIP_LINTING TRUE)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
