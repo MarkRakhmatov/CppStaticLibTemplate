@@ -51,8 +51,21 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
   # Skip linting for all files in the _deps directory
-  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/_deps")
-  set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps" PROPERTY SKIP_LINTING TRUE)
+  set(DEPS_FOLDER "${CMAKE_BINARY_DIR}/_deps")
+
+  # Define the content of your .clang-tidy file
+  set(CLANG_TIDY_CONTENT
+      "---
+  Checks: '-*'
+  ---"
+  )
+
+  # Ensure the _deps folder exists before writing the file
+  file(MAKE_DIRECTORY "${DEPS_FOLDER}")
+
+  # Write the .clang-tidy file to the _deps folder
+  file(WRITE "${DEPS_FOLDER}/.clang-tidy" "${CLANG_TIDY_CONTENT}")
+
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
     set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
