@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14...3.22)
+cmake_minimum_required(VERSION 3.27...4.2.0)
 
 # ---- Project ----
 
@@ -50,9 +50,11 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 # ---- Static analisys ----
 
 if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
+  # Skip linting for all files in the _deps directory
+  set_property(DIRECTORY "${CMAKE_BINARY_DIR}/_deps" PROPERTY SKIP_LINTING TRUE)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
-    set(CMAKE_CXX_CLANG_TIDY clang-tidy; -header-filter=.)
+    set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
   else()
     message(STATUS "Integrating Cppcheck")
     find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15...3.23)
+cmake_minimum_required(VERSION 3.27...4.2.0)
 
 set(TESTED_PROJECT_NAME CppStaticLib)
 
