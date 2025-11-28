@@ -17,9 +17,11 @@ project(
   LANGUAGES CXX
 )
 
-option(${PROJECT_NAME}_BUILD_TESTS "Build test" ON)
+option(${PROJECT_NAME}_BUILD_TESTS "Build test" OFF)
 option(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
-option(${PROJECT_NAME}_ENABLE_COVERAGE "" OFF)
+option(${PROJECT_NAME}_ENABLE_COVERAGE "Code coverage" OFF)
+
+option(${PROJECT_NAME}_BUILD_FUZZ_TESTS "Build fuzz tests" OFF)
 
 # ---- Include guards ----
 
@@ -95,6 +97,12 @@ endif()
 
 if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(test)
+endif()
+
+# ---- FuzzTests ----
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND ${PROJECT_NAME}_BUILD_FUZZ_TESTS)
+  add_subdirectory(fuzz_test)
 endif()
 
 # ---- Create an installable target ----

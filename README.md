@@ -13,6 +13,7 @@ C++ 23 static library template
 ### It includes
 
 * unit testing using [UT/μt](https://github.com/boost-ext/ut)
+* fuzz testing using [fuzztest](https://github.com/google/fuzztest)
 * single GitHub action workflow
 
 ### It requires
