@@ -47,35 +47,6 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
-# ---- Static analisys ----
-
-if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
-  # Skip linting for all files in the _deps directory
-  set(DEPS_FOLDER "${CMAKE_BINARY_DIR}/_deps")
-
-  # Define the content of your .clang-tidy file
-  set(CLANG_TIDY_CONTENT "Checks: '-*'\n")
-
-  # Ensure the _deps folder exists before writing the file
-  file(MAKE_DIRECTORY "${DEPS_FOLDER}")
-
-  # Write the .clang-tidy file to the _deps folder
-  file(WRITE "${DEPS_FOLDER}/.clang-tidy" "${CLANG_TIDY_CONTENT}")
-  message(STATUS "Created .clang-tidy file to exclude dependencies from analysis")
-
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    message(STATUS "Clang compiler detected. Integrating clang-tidy")
-    set(CMAKE_CXX_CLANG_TIDY clang-tidy;)
-  else()
-    message(STATUS "Integrating Cppcheck")
-    find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
-    set(CMAKE_CXX_CPPCHECK
-        ${CPPCHECK_EXECUTABLE};
-        --std=c++${CMAKE_CXX_STANDARD};--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
-    )
-  endif()
-endif()
-
 # ---- Create static library ----
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
@@ -90,6 +61,24 @@ target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                          $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
 )
+
+# ---- Static analisys ----
+
+if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    message(STATUS "Clang compiler detected. Integrating clang-tidy")
+    set_target_properties(${PROJECT_NAME} PROPERTIES CMAKE_CXX_CLANG_TIDY "clang-tidy;")
+  else()
+    message(STATUS "Integrating Cppcheck")
+    find_program(CPPCHECK_EXECUTABLE NAMES cppcheck REQUIRED)
+    set_target_properties(
+      ${PROJECT_NAME}
+      PROPERTIES
+        CMAKE_CXX_CPPCHECK ${CPPCHECK_EXECUTABLE};
+        --std=c++${CMAKE_CXX_STANDARD};--enable=all;--error-exitcode=10;--suppressions-list=${PROJECT_SOURCE_DIR}/cppcheck.supp;
+    )
+  endif()
+endif()
 
 # ---- code coverage ----
 if(${PROJECT_NAME}_ENABLE_COVERAGE)
