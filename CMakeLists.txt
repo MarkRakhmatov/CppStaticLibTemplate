@@ -54,17 +54,14 @@ if(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS)
   set(DEPS_FOLDER "${CMAKE_BINARY_DIR}/_deps")
 
   # Define the content of your .clang-tidy file
-  set(CLANG_TIDY_CONTENT
-      "---
-  Checks: '-*'
-  ---"
-  )
+  set(CLANG_TIDY_CONTENT "Checks: '-*'\n")
 
   # Ensure the _deps folder exists before writing the file
   file(MAKE_DIRECTORY "${DEPS_FOLDER}")
 
   # Write the .clang-tidy file to the _deps folder
   file(WRITE "${DEPS_FOLDER}/.clang-tidy" "${CLANG_TIDY_CONTENT}")
+  message(STATUS "Created .clang-tidy file to exclude dependencies from analysis")
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     message(STATUS "Clang compiler detected. Integrating clang-tidy")
