@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-04.dtd'>
-<coverage line-rate="1.0" branch-rate="0.75" lines-covered="6" lines-valid="6" branches-covered="3" branches-valid="4" complexity="0.0" timestamp="1764368622" version="gcovr 7.0">
+<coverage line-rate="1.0" branch-rate="0.75" lines-covered="6" lines-valid="6" branches-covered="3" branches-valid="4" complexity="0.0" timestamp="1764445704" version="gcovr 7.0">
   <sources>
     <source>..</source>
   </sources>
@@ -10,20 +10,20 @@
         <class name="CppStaticLib_cpp" filename="src/CppStaticLib.cpp" line-rate="1.0" branch-rate="0.75" complexity="0.0">
           <methods/>
           <lines>
-            <line number="7" hits="4" branch="true" condition-coverage="50% (1/2)">
+            <line number="7" hits="2" branch="true" condition-coverage="50% (1/2)">
               <conditions>
                 <condition number="0" type="jump" coverage="50%"/>
               </conditions>
             </line>
-            <line number="9" hits="8" branch="false"/>
-            <line number="10" hits="8" branch="true" condition-coverage="100% (2/2)">
+            <line number="9" hits="9" branch="false"/>
+            <line number="10" hits="9" branch="true" condition-coverage="100% (2/2)">
               <conditions>
                 <condition number="0" type="jump" coverage="100%"/>
               </conditions>
             </line>
-            <line number="11" hits="6" branch="false"/>
-            <line number="14" hits="2" branch="false"/>
-            <line number="15" hits="8" branch="false"/>
+            <line number="11" hits="4" branch="false"/>
+            <line number="14" hits="5" branch="false"/>
+            <line number="15" hits="9" branch="false"/>
           </lines>
         </class>
       </classes>
