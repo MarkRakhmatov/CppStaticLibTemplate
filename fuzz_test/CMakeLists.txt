@@ -36,7 +36,14 @@ add_executable(${PROJECT_NAME} ${sources})
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::ut fuzztest::fuzztest ${TESTED_PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+    Boost::ut
+    fuzztest::fuzztest
+    absl::failure_signal_handler
+    absl::symbolize
+    fuzztest::init_fuzztest
+    ${TESTED_PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
