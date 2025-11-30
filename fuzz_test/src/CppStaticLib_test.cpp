@@ -28,7 +28,7 @@ void factorialAlwaysGreaterThan0OrInvalid(int input) {
 FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0OrInvalid);
 
 
-void initFuzztest(int argc, char** argv) {
+void initFuzztest(int argc, const char** argv) {
   absl::InitializeSymbolizer(argv[0]);
   absl::FailureSignalHandlerOptions options;
   options.call_previous_handler = true;
@@ -46,8 +46,9 @@ void runFuzztests() {
   }
 }
 
-int main(int argc, char** argv) {
+int main(int argc, const char** argv) {
   try {
+    boost::ut::detail::cfg::parse_arg_with_fallback(argc, argv);
     unitTests();
 
     initFuzztest(argc, argv);

@@ -6,9 +6,9 @@
 #include <cstdlib>
 #include <exception>
 
-void tests() {
-  using namespace boost::ut;
+using namespace boost::ut;
 
+void tests() {
   "get string"_test = [] {
     expect(!csl::getString().empty());
     expect(csl::getString() == std::string("cpp static lib example"));
@@ -27,8 +27,9 @@ void tests() {
   };
 }
 
-int main() {
+int main(int argc, const char** argv) {
   try {
+    boost::ut::detail::cfg::parse_arg_with_fallback(argc, argv);
     tests();
   } catch (const std::exception& ex) {
     std::cout << "exception: "<< ex.what();
