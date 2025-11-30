@@ -23,13 +23,16 @@ endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
 
-# CPMAddPackage("gh:google/fuzztest#2025-08-05")
 CPMAddPackage(
-    NAME fuzztest
-    URL "https://github.com/google/fuzztest.git"
-    GIT_TAG 2025-08-05
-    OPTIONS "FUZZTEST_FUZZING_MODE=ON"
+    URI "gh:google/fuzztest#2025-08-05"
+    OPTIONS "FUZZTEST_FUZZING_MODE ON"
 )
+# CPMAddPackage(
+#     NAME fuzztest
+#     URL "https://github.com/google/fuzztest.git"
+#     GIT_TAG 2025-08-05
+#     OPTIONS "FUZZTEST_FUZZING_MODE=ON"
+# )
 
 # ---- Create binary ----
 
