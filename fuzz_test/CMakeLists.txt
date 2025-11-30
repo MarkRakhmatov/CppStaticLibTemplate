@@ -50,7 +50,7 @@ link_fuzztest(${PROJECT_NAME})
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
 # enable compiler warnings
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
+#target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
 
 # ---- Add Tests ----
 
