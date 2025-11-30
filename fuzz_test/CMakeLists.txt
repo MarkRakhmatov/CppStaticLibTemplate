@@ -26,8 +26,9 @@ CPMAddPackage("gh:boost-ext/ut@2.3.1")
 # CPMAddPackage("gh:google/fuzztest#2025-08-05")
 CPMAddPackage(
     NAME fuzztest
-    GITHUB_REPOSITORY google/fuzztest
+    URL "https://github.com/google/fuzztest.git"
     GIT_TAG 2025-08-05
+    OPTIONS "FUZZTEST_FUZZING_MODE=ON"
 )
 
 # ---- Create binary ----
@@ -50,7 +51,7 @@ link_fuzztest(${PROJECT_NAME})
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
 # enable compiler warnings
-#target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
 
 # ---- Add Tests ----
 
