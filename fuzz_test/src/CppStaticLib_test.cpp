@@ -20,12 +20,6 @@ FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0);
 
 
 void initFuzztest(int argc, char** argv) {
-  using namespace boost::ut;
-
-  "factorial_5"_test = [] {
-    expect(csl::factorial(5) > 0);
-  };
-
   absl::InitializeSymbolizer(argv[0]);
   absl::FailureSignalHandlerOptions options;
   options.call_previous_handler = true;
@@ -43,10 +37,19 @@ void runFuzztests() {
   }
 }
 
+void unitTests() {
+  using namespace boost::ut;
+
+  "factorial_3"_test = [] {
+    expect(csl::factorial(3) == 6);
+  };
+}
+
 int main(int argc, char** argv) {
   try {
+    unitTests();
+
     initFuzztest(argc, argv);
-    factorialAlwaysGreaterThan0(5);
     runFuzztests();
   } catch (const std::exception& ex) {
     std::cout << "exception: "<< ex.what();

@@ -11,13 +11,6 @@ namespace csl {
       return 1;
     }
 
-    const int max = 1000;
-
-    if (input > max) {
-      return -1;
-    }
-
-
     return input * factorial(input - 1);
   }
 
