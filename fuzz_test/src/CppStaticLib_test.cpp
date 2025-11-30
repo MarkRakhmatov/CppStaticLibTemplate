@@ -9,14 +9,24 @@
 #include <cstdlib>
 #include <exception>
 
-void factorialAlwaysGreaterThan0(int input) {
+
+void unitTests() {
   using namespace boost::ut;
-  test(" factorial_" + std::to_string(input)) = [input] {
-    expect(csl::factorial(input) > 0);
+
+  "ut_factorial_3"_test = [] {
+    expect(csl::factorial(3) == 6);
   };
 }
 
-FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0);
+void factorialAlwaysGreaterThan0OrInvalid(int input) {
+  using namespace boost::ut;
+  test(" factorial_" + std::to_string(input)) = [input] {
+    auto r = csl::factorial(input);
+    expect(r > 0 || r == -1);
+  };
+}
+
+FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0OrInvalid);
 
 
 void initFuzztest(int argc, char** argv) {
@@ -35,14 +45,6 @@ void runFuzztests() {
   for (const auto& name: fuzztest::ListRegisteredTests()) {
     fuzztest::RunSpecifiedFuzzTest(name, {});
   }
-}
-
-void unitTests() {
-  using namespace boost::ut;
-
-  "factorial_3"_test = [] {
-    expect(csl::factorial(3) == 6);
-  };
 }
 
 int main(int argc, char** argv) {
