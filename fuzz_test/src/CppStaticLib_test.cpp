@@ -9,12 +9,10 @@
 #include <cstdlib>
 #include <exception>
 
-void factorialAlwaysGreaterThan0(int) {
+void factorialAlwaysGreaterThan0(int input) {
   using namespace boost::ut;
-
-  "factorial"_test = [] {
-    expect(csl::factorial(0) > 0);
-    // expect(csl::factorial(input) > 0);
+  test(" factorial_" + std::to_string(input)) = [input] {
+    expect(csl::factorial(input) > 0);
   };
 }
 
@@ -22,6 +20,12 @@ FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0);
 
 
 void initFuzztest(int argc, char** argv) {
+  using namespace boost::ut;
+
+  "factorial_5"_test = [] {
+    expect(csl::factorial(5) > 0);
+  };
+
   absl::InitializeSymbolizer(argv[0]);
   absl::FailureSignalHandlerOptions options;
   options.call_previous_handler = true;
