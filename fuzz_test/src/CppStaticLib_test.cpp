@@ -1,6 +1,7 @@
 #include <boost/ut.hpp>
 #include "fuzztest/fuzztest.h"
 #include "fuzztest/init_fuzztest.h"
+#include "fuzztest/internal/io.h"
 #include "absl/debugging/failure_signal_handler.h"
 #include "absl/debugging/symbolize.h"
 
@@ -23,7 +24,7 @@ void factorialAlwaysGreaterThan0OrInvalid(int) {
 FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0OrInvalid);
 
 
-void initFuzztest(int argc, char** argv) {
+void initFuzztest(int argc, char** argv, std::string_view binary_id) {
   absl::InitializeSymbolizer(argv[0]);
   absl::FailureSignalHandlerOptions options;
   options.call_previous_handler = true;
@@ -32,22 +33,23 @@ void initFuzztest(int argc, char** argv) {
   // since the latter would complain about any unknown flags that need
   // to be passed to legacy fuzzing engines (e.g. libfuzzer).
   fuzztest::ParseAbslFlags(argc, argv);
-  fuzztest::InitFuzzTest(&argc, &argv);
+  fuzztest::InitFuzzTest(&argc, &argv, binary_id);
 }
 
-void runFuzztests() {
+void runFuzztests(std::string_view binary_id) {
   for (const auto& name: fuzztest::ListRegisteredTests()) {
-    fuzztest::RunSpecifiedFuzzTest(name, {});
+    fuzztest::RunSpecifiedFuzzTest(name, binary_id);
   }
 }
 
 int main(int argc, char** argv) {
   try {
+    auto binary_id = std::string(fuzztest::internal::Basename(*argv[0]));
     boost::ut::detail::cfg::parse_arg_with_fallback(argc, const_cast<const char**>(argv));
     unitTests();
 
-    initFuzztest(argc, argv);
-    runFuzztests();
+    initFuzztest(argc, argv, binary_id);
+    runFuzztests(binary_id);
   } catch (const std::exception& ex) {
     std::cout << "exception: "<< ex.what();
     return EXIT_FAILURE;
