@@ -28,11 +28,11 @@ endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
 
+# CPMAddPackage("gh:google/fuzztest#2025-08-05")
 CPMAddPackage(
     NAME fuzztest
     GITHUB_REPOSITORY google/fuzztest
     GIT_TAG 2025-08-05
-    OPTIONS "FUZZTEST_FUZZING_MODE=ON"
 )
 
 # ---- Create binary ----
@@ -45,11 +45,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     Boost::ut
-    fuzztest::fuzztest
-    absl::failure_signal_handler
-    absl::symbolize
-    fuzztest::init_fuzztest
+    # fuzztest::fuzztest
+    # absl::failure_signal_handler
+    # absl::symbolize
+    # fuzztest::init_fuzztest
     ${TESTED_PROJECT_NAME})
+
+link_fuzztest(${PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 

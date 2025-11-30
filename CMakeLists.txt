@@ -54,6 +54,15 @@ add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
+# enable compiler warnings
+if(NOT TEST_INSTALLED_VERSION)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wpedantic -Wextra -Werror)
+  elseif(MSVC)
+    target_compile_options(${PROJECT_NAME} PUBLIC /W4 /WX)
+  endif()
+endif()
+
 # Link dependencies
 target_link_libraries(${PROJECT_NAME} PRIVATE)
 
