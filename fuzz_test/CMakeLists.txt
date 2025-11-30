@@ -31,7 +31,8 @@ CPMAddPackage("gh:boost-ext/ut@2.3.1")
 CPMAddPackage(
     NAME fuzztest
     GITHUB_REPOSITORY google/fuzztest
-    GIT_TAG "2025-08-05"
+    GIT_TAG 2025-08-05
+    OPTIONS "FUZZTEST_FUZZING_MODE=ON"
 )
 
 # ---- Create binary ----
