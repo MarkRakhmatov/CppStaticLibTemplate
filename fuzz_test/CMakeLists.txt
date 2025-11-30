@@ -2,11 +2,6 @@ cmake_minimum_required(VERSION 3.27...4.2.0)
 
 set(TESTED_PROJECT_NAME CppStaticLib)
 
-# Only set the cxx_standard if it is not set by someone else
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 23)
-endif()
-
 project(${TESTED_PROJECT_NAME}FuzzTests LANGUAGES CXX)
 
 # ---- Options ----
@@ -28,27 +23,26 @@ endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
 
-CPMAddPackage("gh:google/fuzztest#2025-08-05")
-# CPMAddPackage(
-#     NAME fuzztest
-#     GITHUB_REPOSITORY google/fuzztest
-#     GIT_TAG 2025-08-05
-# )
+# CPMAddPackage("gh:google/fuzztest#2025-08-05")
+CPMAddPackage(
+    NAME fuzztest
+    GITHUB_REPOSITORY google/fuzztest
+    GIT_TAG 2025-08-05
+)
 
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_NAME} ${sources})
 
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
+
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     Boost::ut
-    # fuzztest::fuzztest
-    # absl::failure_signal_handler
-    # absl::symbolize
-    # fuzztest::init_fuzztest
     ${TESTED_PROJECT_NAME})
 
 link_fuzztest(${PROJECT_NAME})

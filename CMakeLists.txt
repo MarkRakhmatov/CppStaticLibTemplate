@@ -2,11 +2,6 @@ cmake_minimum_required(VERSION 3.27...4.2.0)
 
 # ---- Project ----
 
-# Only set the cxx_standard if it is not set by someone else
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 23)
-endif()
-
 # strongly encouraged to enable this globally to avoid conflicts between -Wpedantic being enabled
 # and -std=c++23 and -std=gnu++23 for example when compiling with PCH enabled
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -50,6 +45,9 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 # ---- Create static library ----
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
