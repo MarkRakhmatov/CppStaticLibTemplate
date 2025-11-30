@@ -81,8 +81,6 @@ jobs:
             cpp_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
-
     - name: Setup Cache
       uses: ./.github/setup_cache
       with:
