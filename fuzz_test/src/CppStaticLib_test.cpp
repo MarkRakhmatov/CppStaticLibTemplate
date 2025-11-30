@@ -1,7 +1,6 @@
 #include <boost/ut.hpp>
 #include "fuzztest/fuzztest.h"
 #include "fuzztest/init_fuzztest.h"
-#include "fuzztest/internal/io.h"
 #include "absl/debugging/failure_signal_handler.h"
 #include "absl/debugging/symbolize.h"
 
@@ -9,6 +8,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <exception>
+#include <filesystem>
 
 using namespace boost::ut;
 
@@ -44,7 +44,9 @@ void runFuzztests(std::string_view binary_id) {
 
 int main(int argc, char** argv) {
   try {
-    auto binary_id = std::string(fuzztest::internal::Basename(*argv[0]));
+    const char* exePath = argv[0];
+    std::filesystem::path fullPath{exePath};
+    auto binary_id = fullPath.filename().string();
     boost::ut::detail::cfg::parse_arg_with_fallback(argc, const_cast<const char**>(argv));
     unitTests();
 
@@ -59,5 +61,6 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  std::cout <<"Success";
   return EXIT_SUCCESS;
 }
