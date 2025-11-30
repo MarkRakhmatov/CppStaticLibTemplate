@@ -47,9 +47,11 @@ target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
     Boost::ut
+    fuzztest::fuzztest
+    absl::failure_signal_handler
+    absl::symbolize
+    fuzztest::init_fuzztest
     ${TESTED_PROJECT_NAME})
-
-link_fuzztest(${PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
