@@ -15,15 +15,15 @@ void tests() {
   };
 
   "factorial"_test = [] {
-    expect(csl::factorial(0) == 1);
-    expect(csl::factorial(1) == 1);
-    expect(csl::factorial(2) == 2);
+    expect(csl::factorial(0) == 1_i);
+    expect(csl::factorial(1) == 1_i);
+    expect(csl::factorial(2) == 2_i);
   };
 
   "factorial_constexpr"_test = [] {
-    static_assert(csl::factorialConstexpr(0) == 1);
-    static_assert(csl::factorialConstexpr(1) == 1);
-    static_assert(csl::factorialConstexpr(2) == 2);
+    static_assert(csl::factorialConstexpr(0) == 1_i);
+    static_assert(csl::factorialConstexpr(1) == 1_i);
+    static_assert(csl::factorialConstexpr(2) == 2_i);
   };
 }
 
