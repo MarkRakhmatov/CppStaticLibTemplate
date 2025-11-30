@@ -28,12 +28,12 @@ endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
 
-# CPMAddPackage("gh:google/fuzztest#2025-08-05")
-CPMAddPackage(
-    NAME fuzztest
-    GITHUB_REPOSITORY google/fuzztest
-    GIT_TAG 2025-08-05
-)
+CPMAddPackage("gh:google/fuzztest#2025-08-05")
+# CPMAddPackage(
+#     NAME fuzztest
+#     GITHUB_REPOSITORY google/fuzztest
+#     GIT_TAG 2025-08-05
+# )
 
 # ---- Create binary ----
 
