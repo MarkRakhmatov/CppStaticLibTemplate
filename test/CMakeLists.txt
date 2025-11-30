@@ -43,9 +43,9 @@ target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 # enable compiler warnings
 if(NOT TEST_INSTALLED_VERSION)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wpedantic -Wextra -Werror)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
   elseif(MSVC)
-    target_compile_options(${PROJECT_NAME} PUBLIC /W4 /WX)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
   endif()
 endif()
 
