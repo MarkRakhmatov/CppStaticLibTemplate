@@ -61,4 +61,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
 # ---- Add Tests ----
 
 enable_testing()
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} -s)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} -s --fuzz=FactorialFuzzTestSuite.factorialAlwaysGreaterThan0OrInvalid)

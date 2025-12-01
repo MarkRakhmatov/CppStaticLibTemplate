@@ -21,7 +21,7 @@ void unitTests() {
 void factorialAlwaysGreaterThan0OrInvalid(int) {
 }
 
-FUZZ_TEST(TestSuite, factorialAlwaysGreaterThan0OrInvalid);
+FUZZ_TEST(FactorialFuzzTestSuite, factorialAlwaysGreaterThan0OrInvalid);
 
 
 void initFuzztest(int argc, char** argv, std::string_view binary_id) {
