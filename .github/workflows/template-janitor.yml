@@ -67,11 +67,11 @@ jobs:
           NEW_SAFE_PROJECT=$(echo ${{ env.NEW_PROJECT }} | sed "s/-/_/g" | sed "s/\./_/g" )
           echo "NEW_SAFE_PROJECT=$NEW_SAFE_PROJECT" >> $GITHUB_ENV 
 
-      # Rename all cpp_starter_project occurences to current repository and remove this workflow
+      # Rename all CppStaticLib occurences to current repository and remove this workflow
       - name: Insert new org and project
         run: |
           # rename the CMake project to match the github project
-          find src include test cmake -type f -exec sed -i "s/CppStaticLib/${{ env.NEW_SAFE_PROJECT }}/gi" CMakeLists.txt .github/workflows/ci.yml {} +
+          find src include test fuzz_test cmake -type f -exec sed -i "s/CppStaticLib/${{ env.NEW_SAFE_PROJECT }}/gi" CMakeLists.txt .github/workflows/ci.yml {} +
 
           # Update URL placeholders for project
           sed -i "s|%%myurl%%|${{ fromJson(steps.get_repo_meta.outputs.data).html_url }}|gi" CMakeLists.txt

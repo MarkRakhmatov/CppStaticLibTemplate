@@ -2,11 +2,10 @@ cmake_minimum_required(VERSION 3.27...4.2.0)
 
 set(TESTED_PROJECT_NAME CppStaticLib)
 
-project(${TESTED_PROJECT_NAME}Tests LANGUAGES CXX)
+project(${TESTED_PROJECT_NAME}FuzzTests LANGUAGES CXX)
 
 # ---- Options ----
 
-option(${TESTED_PROJECT_NAME}_ENABLE_COVERAGE "Enable test coverage" OFF)
 option(TEST_INSTALLED_VERSION "Test the version found by find_package" OFF)
 
 # ---- Dependencies ----
@@ -24,9 +23,15 @@ endif()
 
 CPMAddPackage("gh:boost-ext/ut@2.3.1")
 
+CPMAddPackage(
+    URI "gh:google/fuzztest#2025-08-05"
+    OPTIONS "FUZZTEST_FUZZING_MODE ON"
+)
+
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
 add_executable(${PROJECT_NAME} ${sources})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
@@ -34,31 +39,20 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Boost::ut ${TESTED_PROJECT_NAME})
+target_link_libraries(
+  ${PROJECT_NAME}
+    PRIVATE
+    ${TESTED_PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
 
+link_fuzztest(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME})
+
 # enable compiler warnings
-if(NOT TEST_INSTALLED_VERSION)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
-  elseif(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
-  endif()
-endif()
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
 
 # ---- Add Tests ----
 
 enable_testing()
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} -s)
-
-# ---- code coverage ----
-
-if(${TESTED_PROJECT_NAME}_ENABLE_COVERAGE)
-  message(STATUS "${TESTED_PROJECT_NAME}_ENABLE_COVERAGE ON, compiler: ${CMAKE_CXX_COMPILER_ID}")
-  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(STATUS "Add coverage options for ${CMAKE_CXX_COMPILER_ID}")
-    target_compile_options(${PROJECT_NAME} INTERFACE --coverage -O0 -g)
-    target_link_libraries(${PROJECT_NAME} INTERFACE --coverage)
-  endif()
-endif()
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} --fuzz_for=2m)

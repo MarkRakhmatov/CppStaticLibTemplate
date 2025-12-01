@@ -18,9 +18,9 @@ Checks: "*,
         -misc-use-internal-linkage
 "
 WarningsAsErrors: '*'
-HeaderFilterRegex: ''
+HeaderFilterRegex: '.*'
+ExcludeHeaderFilterRegex: '.*[/\\]_deps[/\\].*'
 FormatStyle:     none
-
 CheckOptions:
   - key: readability-identifier-length.IgnoredVariableNames
     value: 'x|y|z'
