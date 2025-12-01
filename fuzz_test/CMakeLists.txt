@@ -37,6 +37,7 @@ CPMAddPackage(
 # ---- Create binary ----
 
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
 add_executable(${PROJECT_NAME} ${sources})
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 23)
@@ -44,16 +45,15 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../include")
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(
+  ${PROJECT_NAME}
     PRIVATE
-    Boost::ut
-    fuzztest::fuzztest
-    absl::failure_signal_handler
-    absl::symbolize
-    fuzztest::init_fuzztest
     ${TESTED_PROJECT_NAME})
 
 target_link_directories(${PROJECT_NAME} PRIVATE ${CMAKE_BINARY_DIR})
+
+link_fuzztest(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME})
 
 # enable compiler warnings
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
@@ -61,4 +61,4 @@ target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Wextra -Werror)
 # ---- Add Tests ----
 
 enable_testing()
-add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} -s --fuzz=FactorialFuzzTestSuite.factorialAlwaysGreaterThan0OrInvalid)
+add_test(NAME ${PROJECT_NAME} COMMAND ${PROJECT_NAME} --fuzz=FactorialFuzzTestSuite.factorialAlwaysGreaterThan0OrInvalid)
