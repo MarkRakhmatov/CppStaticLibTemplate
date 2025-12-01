@@ -112,8 +112,14 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND ${PROJECT_NAME}_BUILD_FUZZ_TESTS)
   target_compile_options(
-    ${PROJECT_NAME} PUBLIC -g -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION -UNDEBUG
-                           -fsanitize=address
+    ${PROJECT_NAME}
+    PUBLIC -g
+           -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+           -UNDEBUG
+           -fsanitize-coverage=inline-8bit-counters
+           -fsanitize-coverage=trace-cmp
+           -fsanitize=address
+           -DADDRESS_SANITIZER
   )
   target_link_libraries(${PROJECT_NAME} PUBLIC -fsanitize=address)
   add_subdirectory(fuzz_test)
