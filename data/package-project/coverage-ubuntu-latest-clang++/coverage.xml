@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE coverage SYSTEM 'http://cobertura.sourceforge.net/xml/coverage-04.dtd'>
-<coverage line-rate="1.0" branch-rate="0.8333333333333334" lines-covered="8" lines-valid="8" branches-covered="5" branches-valid="6" complexity="0.0" timestamp="1764761688" version="gcovr 7.0">
+<coverage line-rate="1.0" branch-rate="0.8333333333333334" lines-covered="8" lines-valid="8" branches-covered="5" branches-valid="6" complexity="0.0" timestamp="1764761836" version="gcovr 7.0">
   <sources>
     <source>..</source>
   </sources>
@@ -15,21 +15,21 @@
                 <condition number="0" type="jump" coverage="50%"/>
               </conditions>
             </line>
-            <line number="11" hits="15059246" branch="false"/>
-            <line number="12" hits="15059246" branch="true" condition-coverage="100% (2/2)">
+            <line number="11" hits="14243896" branch="false"/>
+            <line number="12" hits="14243896" branch="true" condition-coverage="100% (2/2)">
               <conditions>
                 <condition number="0" type="jump" coverage="100%"/>
               </conditions>
             </line>
-            <line number="13" hits="3173668" branch="false"/>
-            <line number="16" hits="11885578" branch="true" condition-coverage="100% (2/2)">
+            <line number="13" hits="2925418" branch="false"/>
+            <line number="16" hits="11318478" branch="true" condition-coverage="100% (2/2)">
               <conditions>
                 <condition number="0" type="jump" coverage="100%"/>
               </conditions>
             </line>
-            <line number="17" hits="4536553" branch="false"/>
-            <line number="20" hits="7349025" branch="false"/>
-            <line number="21" hits="15059246" branch="false"/>
+            <line number="17" hits="4273964" branch="false"/>
+            <line number="20" hits="7044514" branch="false"/>
+            <line number="21" hits="14243896" branch="false"/>
           </lines>
         </class>
       </classes>
