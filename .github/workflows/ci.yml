@@ -23,7 +23,7 @@ jobs:
       # permission required to leave coverage comment
       pull-requests: write
 
-    name: ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.build_type}} ${{matrix.generator}}
+    name: ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.build_type}} ${{matrix.generator}} ${{matrix.package_generator}}
     runs-on: ${{ matrix.os }}
 
     strategy:
