@@ -74,11 +74,12 @@ jobs:
             build_type: Release
 
           # Set up preferred package generators, for given build configurations
-          - build_type: Release
+          - os: ubuntu-latest
+            build_type: Release
+            generator: "Unix Makefiles"
             package_generator: TBZ2
 
           - os: windows-latest
-            compiler: msvc
             generator: "Visual Studio 17 2022"
             build_type: Release
             package_generator: ZIP
