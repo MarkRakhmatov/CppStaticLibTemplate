@@ -51,7 +51,7 @@ runs:
       run: |
         mkdir -p coverage-action
         cp ${{ inputs.path }} coverage-action/
-        pycobertura show ${{ inputs.path }} --output .coverage-output
+        pycobertura show ${{ inputs.path }} --format markdown --output .coverage-output
         cat .coverage-output
       shell: bash
 
