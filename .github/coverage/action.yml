@@ -21,18 +21,6 @@ inputs:
     description: Create a diff of the coverage report.
     required: false
     default: false
-  pycobertura-exception-failure:
-    description: Fail the action in case of a `Pycobertura` exception.
-    required: false
-    default: true
-  exclude-detailed-coverage:
-    description: |
-      Whether a detailed coverage report should be excluded from the PR comment.
-      The detailed coverage report contains the following information per file:
-      number of code statements, number of statements not covered by any test,
-      coverage percentage, and line numbers not covered by any test.
-    required: false
-    default: false
 
 runs:
   using: composite
@@ -55,3 +43,52 @@ runs:
         cat .coverage-output
       shell: bash
 
+    - name: Check threshold
+      if: contains(inputs.fail, 'true')
+      shell: python
+      run: |
+        import os
+        def read_file_backwards(f):
+            f.seek(0, os.SEEK_END)  # Go to the end of the file
+            position = f.tell()
+            buffer = ""
+            while position >= 0:
+                f.seek(position)
+                byte = f.read(1)
+                if byte == '\n' and buffer:
+                    yield buffer[::-1]
+                    buffer = ""
+                else:
+                    buffer += byte
+                position -= 1
+            if buffer: # Yield any remaining buffer content
+                yield buffer[::-1]
+
+        def readLastLine(filename: str) -> str:
+            with open(filename, 'r') as t:
+                lastLine = ""
+                for line in read_file_backwards(t):
+                    lastLine = line.strip()
+                    if (lastLine == ""):
+                        continue
+                    return lastLine
+            return ""
+
+        # input example:
+        # | TOTAL                |       7 |      0 | 100.00% |           |
+        def parseTotal(lastLine: str) -> float:
+            percentIndex = 4
+            return float(lastLine.split("|")[percentIndex].strip()[0:-1])
+
+        lastLine = readLastLine('.coverage-output')
+        if lastLine == "":
+            raise SystemExit(
+                "Failed to read total coverage from file"
+            )
+
+        total = parseTotal(lastLine)
+        min = float('${{ inputs.threshold }}')
+        if total < min:
+            raise SystemExit(
+                f"Total Coverage of {total}% falls below minimum threshold of {min}%."
+            )
