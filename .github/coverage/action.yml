@@ -1,6 +1,10 @@
 ---
 name: Code Coverage Report
 inputs:
+  token:
+    description: Github token to use to publish the check.
+    required: false
+    default: ${{ github.token }}
   path:
     description: Path to the Cobertura coverage XML report.
     required: false
@@ -46,6 +50,7 @@ runs:
     - name: Get total coverage
       shell: python
       run: |
+        # Get total coverage
         import os
         def read_file_backwards(f):
             f.seek(0, os.SEEK_END)  # Go to the end of the file
@@ -90,10 +95,17 @@ runs:
         with open(os.getenv('GITHUB_ENV'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}')
 
+    - name: Post as comment
+      if: contains(inputs.publish, 'true')
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        header: ${{ job.name }}
+        path: .coverage-output
+
     - name: Check threshold
       if: contains(inputs.fail, 'true') && (fromJSON(env.TOTAL_COVERAGE) < inputs.threshold)
       shell: bash
       run: |
         echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
         exit 1
-
