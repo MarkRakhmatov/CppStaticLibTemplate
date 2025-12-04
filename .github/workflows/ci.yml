@@ -178,12 +178,22 @@ jobs:
       run: |
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
+    - name: Download ${{github.base_ref}} cobertura artifact
+      id: download-baseline-cobertura
+      # if artifact not found, continue but do not
+      continue-on-error: true
+      uses: actions/download-artifact@v5
+      with:
+        name: "${{github.base_ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        path: ./build/baseline-coverage.xml
+
     - name: Produce the coverage report
       if: ${{ matrix.build_type == 'Debug'}}
       uses: ./.github/coverage
       with:
         # Path to the Cobertura XML report.
         path: ./build/coverage.xml
+        baseline_path: ${{steps.download-baseline-cobertura.outcome != 'failure' && './build/baseline-coverage.xml' || '' }}
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
@@ -195,6 +205,12 @@ jobs:
         publish: true
         # Separate comment for each job in matrix
         comment_header: "## 🧪 Code Coverage Summary ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: "${{github.ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        path: ./build/coverage.xml
+        overwrite: true
 
     - name: CPack
       if: matrix.package_generator != ''

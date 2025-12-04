@@ -9,6 +9,10 @@ inputs:
     description: Path to the Cobertura coverage XML report.
     required: false
     default: coverage.xml
+  baseline_path:
+    description: Path to the baseline Cobertura coverage XML report. If passed diff will be generated and published
+    required: false
+    default: coverage.xml
   threshold:
     description: The minimum allowed coverage percentage, as a real number.
     required: false
@@ -45,6 +49,15 @@ runs:
         cp ${{ inputs.path }} coverage-action/
         pycobertura show ${{ inputs.path }} --format markdown --output .coverage-output
         cat .coverage-output
+      shell: bash
+
+    - name: Generate text report
+      if: ${{ inputs.baseline_path != '' }}
+      run: |
+        mkdir -p coverage-action
+        cp ${{ inputs.path }} coverage-action/
+        pycobertura diff --format markdown --output .coverage-output-diff ${{ inputs.baseline_path }} ${{ inputs.path }}
+        cat .coverage-output-diff
       shell: bash
 
     - name: Get total coverage
@@ -126,3 +139,4 @@ runs:
       run: |
         echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
         exit 1
+
