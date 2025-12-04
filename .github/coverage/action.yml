@@ -105,7 +105,11 @@ runs:
                 for line in coverageTable:
                     f.write(line)
             f.write("\n\n")
-            f.write("Minimum allowed coverage is \`${{ inputs.threshold }}%\`\n")
+            f.write("Results for commit: ${{ github.sha }}")
+            f.write("\n\n")
+            f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_")
+            f.write("\n\n")
+            f.write(":recycle: This comment has been updated with latest results")
 
 
     - name: Post as comment
