@@ -51,7 +51,7 @@ runs:
         cat .coverage-output
       shell: bash
 
-    - name: Generate text report
+    - name: Generate diff report
       if: ${{ inputs.baseline_path != '' }}
       run: |
         mkdir -p coverage-action
