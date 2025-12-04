@@ -21,10 +21,10 @@ inputs:
     description: Publish the coverage report as an issue comment.
     required: false
     default: false
-  diff:
-    description: Create a diff of the coverage report.
+  comment_header:
+    description: Coverage comment header, diplayed on top of PR comment
     required: false
-    default: false
+    default: ""
 
 runs:
   using: composite
@@ -95,13 +95,26 @@ runs:
         with open(os.getenv('GITHUB_ENV'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}')
 
+    - name: Prepare coverage comment
+      shell: python
+      run: |
+        # Prepare coverage comment
+        with open(".coverage-output-message", 'w', encoding="utf-8") as f:
+            f.write("${{ inputs.comment_header }}\n\n")
+            with open(".coverage-output", "r") as coverageTable:
+                for line in coverageTable:
+                    f.write(line)
+            f.write("\n\n")
+            f.write("Minimum allowed coverage is \`${{ inputs.threshold }}%\`\n")
+
+
     - name: Post as comment
       if: contains(inputs.publish, 'true')
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         GITHUB_TOKEN: ${{ inputs.token }}
-        header: ${{ job.name }}
-        path: .coverage-output
+        header: ${{ inputs.comment_header }}
+        path: .coverage-output-message
 
     - name: Check threshold
       if: contains(inputs.fail, 'true') && (fromJSON(env.TOTAL_COVERAGE) < inputs.threshold)

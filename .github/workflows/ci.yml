@@ -193,6 +193,8 @@ jobs:
         fail: true
         # Publish the rendered output as a PR comment
         publish: true
+        # Separate comment for each job in matrix
+        comment_header: "🧪 Test coverage ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - name: CPack
       if: matrix.package_generator != ''
