@@ -80,7 +80,6 @@ runs:
             return float(lastLine.split("|")[percentIndex].strip()[0:-1])
 
         lastLine = readLastLine('.coverage-output')
-        print(lastLine)
         if lastLine == "":
             raise SystemExit(
                 "Failed to read total coverage from file"
@@ -88,11 +87,13 @@ runs:
 
         total = parseTotal(lastLine)
         print(f'TOTAL coverage: {total}%')
-        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-            f.write(f'TOTAL_COVERAGE={total}.2f')
+        with open(os.getenv('GITHUB_ENV'), 'a') as f:
+            f.write(f'TOTAL_COVERAGE={total:.2f}')
 
     - name: Check threshold
       if: ${{contains(inputs.fail, 'true') && env.TOTAL_COVERAGE < inputs.threshold}}
       shell: bash
-      run: exit 1
+      run: |
+        echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%."
+        exit 1
 
