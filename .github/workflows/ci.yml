@@ -187,7 +187,7 @@ jobs:
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        threshold: 101
+        threshold: 75
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
         fail: true
