@@ -10,6 +10,7 @@ on:
       - develop
 
 env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   PROJECT_NAME: CppStaticLib
 
   CLANG_COMPILER: "clang++"
@@ -179,6 +180,7 @@ jobs:
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
     - name: Download ${{github.base_ref}} cobertura artifact
+      if: ${{ matrix.build_type == 'Debug'}}
       id: download-baseline-cobertura
       # if artifact not found, continue but do not
       continue-on-error: true
@@ -207,8 +209,9 @@ jobs:
         comment_header: "## 🧪 Code Coverage Summary ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - uses: actions/upload-artifact@v4
+      if: ${{ matrix.build_type == 'Debug'}}
       with:
-        name: "${{github.ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        name: "${{ env.BRANCH_NAME }} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         path: ./build/coverage.xml
         overwrite: true
 
