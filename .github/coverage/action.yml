@@ -56,7 +56,7 @@ runs:
       run: |
         mkdir -p coverage-action
         cp ${{ inputs.path }} coverage-action/
-        pycobertura diff --format markdown --output .coverage-output-diff ${{ inputs.baseline_path }} ${{ inputs.path }}
+        pycobertura diff --no-color --no-source --format markdown --output .coverage-output-diff ${{ inputs.baseline_path }} ${{ inputs.path }}
         cat .coverage-output-diff
       shell: bash
 
@@ -121,6 +121,10 @@ runs:
             f.write("Results for commit: ${{ github.sha }}")
             f.write("\n\n")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_")
+            f.write("\n\n")
+            with open(".coverage-output-diff", "r") as coverageTable:
+                for line in coverageTable:
+                    f.write(line)
             f.write("\n\n")
             f.write(":recycle: This comment has been updated with latest results")
 

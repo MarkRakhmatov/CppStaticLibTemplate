@@ -179,7 +179,7 @@ jobs:
       run: |
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
-    - name: DEBUG get main branch run ids
+    - name: Get base branch last run id
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
@@ -196,10 +196,7 @@ jobs:
         github-token: ${{ github.token }}
         run-id: ${{env.TARGET_BRANCH_RUN_ID}}
         name: "${{github.base_ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
-        path: ./build/baseline-coverage.xml
-
-    - name: DEBUG print downloaded file content
-      run: cat ./build/baseline-coverage.xml
+        path: ./build/baseline_coveraage
 
     - name: Produce the coverage report
       if: ${{ matrix.build_type == 'Debug'}}
@@ -207,7 +204,7 @@ jobs:
       with:
         # Path to the Cobertura XML report.
         path: ./build/coverage.xml
-        baseline_path: ${{steps.download-baseline-cobertura.outcome != 'failure' && './build/baseline-coverage.xml' || '' }}
+        baseline_path: ${{steps.download-baseline-cobertura.outcome != 'failure' && './build/baseline_coveraage/coverage.xml' || '' }}
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
