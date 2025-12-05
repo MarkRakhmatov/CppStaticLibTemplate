@@ -180,6 +180,7 @@ jobs:
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
     - name: Get base branch last run id
+      shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
