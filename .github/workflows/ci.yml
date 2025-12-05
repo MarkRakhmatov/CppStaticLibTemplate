@@ -184,7 +184,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         RUN_ID=$(gh run list --branch ${{github.base_ref}} --limit 1 --json databaseId -q '.[0].databaseId')
-        echo $RUN_ID
+        echo "TARGET_BRANCH_RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
     - name: Download ${{github.base_ref}} cobertura artifact
       if: ${{ matrix.build_type == 'Debug'}}
@@ -194,6 +194,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         github-token: ${{ github.token }}
+        run-id: ${{env.TARGET_BRANCH_RUN_ID}}
         name: "${{ env.BRANCH_NAME }} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         path: ./build/baseline-coverage.xml
 
