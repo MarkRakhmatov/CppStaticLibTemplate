@@ -179,6 +179,13 @@ jobs:
       run: |
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
+    - name: DEBUG get main branch run ids
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        RUN_ID=$(gh run list --branch ${{github.base_ref}} --limit 1 --json databaseId -q '.[0].databaseId')
+        echo $RUN_ID
+
     - name: Download ${{github.base_ref}} cobertura artifact
       if: ${{ matrix.build_type == 'Debug'}}
       id: download-baseline-cobertura
