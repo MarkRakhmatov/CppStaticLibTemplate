@@ -195,7 +195,7 @@ jobs:
       with:
         github-token: ${{ github.token }}
         run-id: ${{env.TARGET_BRANCH_RUN_ID}}
-        name: "${{ env.BRANCH_NAME }} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        name: "${{github.base_ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         path: ./build/baseline-coverage.xml
 
     - name: Produce the coverage report
