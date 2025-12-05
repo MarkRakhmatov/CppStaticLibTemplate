@@ -199,7 +199,7 @@ jobs:
         name: "${{github.base_ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         path: ./build/baseline_coveraage
 
-    - name: Produce the coverage report
+    - name: Check coverage
       if: ${{ matrix.build_type == 'Debug'}}
       uses: ./.github/coverage
       with:

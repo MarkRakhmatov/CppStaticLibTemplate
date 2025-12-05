@@ -18,8 +18,8 @@ void tests() {
     expect(csl::factorial(0) == 1_i);
     expect(csl::factorial(1) == 1_i);
     expect(csl::factorial(2) == 2_i);
-    // expect(csl::factorial(12) == 479001600_i);
-    // expect(csl::factorial(13) == -1_i);
+    expect(csl::factorial(12) == 479001600_i);
+    expect(csl::factorial(13) == -1_i);
   };
 
   "factorial_constexpr"_test = [] {
