@@ -213,6 +213,8 @@ jobs:
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
         fail: true
+        # Fail if coverage decreased
+        fail_on_decrease: true
         # Publish the rendered output as a PR comment
         publish: true
         # Separate comment for each job in matrix

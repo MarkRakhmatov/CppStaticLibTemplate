@@ -21,6 +21,10 @@ inputs:
     description: Fail the action when the minimum coverage was not met.
     required: false
     default: true
+  fail_on_decrease:
+    description: Fail the action when the coverage decrease
+    required: false
+    default: false
   publish:
     description: Publish the coverage report as an issue comment.
     required: false
@@ -103,10 +107,17 @@ runs:
                 "Failed to read total coverage from file"
             )
 
+        lastLineDiff = readLastLine('.coverage-output-diff')
+        if lastLine == "":
+            raise SystemExit(
+                "Failed to read total coverage from file"
+            )
+
         total = parseTotal(lastLine)
-        print(f'TOTAL coverage: {total}%')
+        diffTotal = parseTotal(lastLineDiff)
         with open(os.getenv('GITHUB_ENV'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}')
+            f.write(f'TOTAL_DIFF_COVERAGE={diffTotal:.2f}')
 
     - name: Prepare coverage comment
       shell: python
@@ -114,13 +125,16 @@ runs:
         # Prepare coverage comment
         with open(".coverage-output-message", 'w', encoding="utf-8") as f:
             f.write("${{ inputs.comment_header }}\n\n")
+            f.write("### Results for latest commit: ${{ github.sha }}")
+            f.write("\n\n")
             with open(".coverage-output", "r") as coverageTable:
                 for line in coverageTable:
                     f.write(line)
             f.write("\n\n")
-            f.write("Results for commit: ${{ github.sha }}")
-            f.write("\n\n")
+            f.write("_Coverage is \`${{ env.TOTAL_COVERAGE }}%\`_")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_")
+            f.write("\n\n")
+            f.write("### Coverage diff")
             f.write("\n\n")
             with open(".coverage-output-diff", "r") as coverageTable:
                 for line in coverageTable:
@@ -144,3 +158,9 @@ runs:
         echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
         exit 1
 
+    - name: Check coverage decrease
+      if: contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0)
+      shell: bash
+      run: |
+        echo "Total Coverage is ${{ env.TOTAL_DIFF_COVERAGE }}% decreased"
+        exit 1
