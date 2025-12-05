@@ -198,6 +198,9 @@ jobs:
         name: "${{github.base_ref}} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         path: ./build/baseline-coverage.xml
 
+    - name: DEBUG print downloaded file content
+      run: cat ./build/baseline-coverage.xml
+
     - name: Produce the coverage report
       if: ${{ matrix.build_type == 'Debug'}}
       uses: ./.github/coverage
