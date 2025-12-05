@@ -111,17 +111,19 @@ runs:
                 "Failed to read total coverage from file"
             )
 
-        lastLineDiff = readLastLine('.coverage-output-diff')
-        if lastLine == "":
-            raise SystemExit(
-                "Failed to read total coverage from file"
-            )
-
         total = parseTotal(lastLine)
-        diffTotal = parseTotal(lastLineDiff)
         with open(os.getenv('GITHUB_ENV'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}\n')
-            f.write(f'TOTAL_DIFF_COVERAGE={diffTotal:.2f}\n')
+        if '${{ inputs.baseline_path }}' != '':
+            lastLineDiff = readLastLine('.coverage-output-diff')
+            if lastLineDiff == "":
+                raise SystemExit(
+                    "Failed to read total coverage from file"
+                )
+
+            diffTotal = parseTotal(lastLineDiff)
+            with open(os.getenv('GITHUB_ENV'), 'a') as f:
+                f.write(f'TOTAL_DIFF_COVERAGE={diffTotal:.2f}\n')
 
     - name: Prepare coverage comment
       shell: python
@@ -138,17 +140,18 @@ runs:
             f.write("_Coverage is \`${{ env.TOTAL_COVERAGE }}%\`_\n")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n")
             f.write("\n\n")
-            f.write("### Coverage diff")
-            f.write("\n\n")
-            with open(".coverage-output-diff", "r") as coverageTable:
-                for line in coverageTable:
-                    f.write(line)
-            f.write("\n\n")
-            if "${{ inputs.fail_on_decrease }}" == "true":
-                if "${{ env.PYCOBERTURA_STATUS }}" == "2":
-                    f.write("Code changes increased the number of uncovered lines in at least one file.\n")
-                if "${{ env.PYCOBERTURA_STATUS }}" == "3":
-                    f.write("Code changes introduced new uncovered statements despite overall coverage improvement.\n")
+            if '${{ inputs.baseline_path }}' != '':
+                f.write("### Coverage diff")
+                f.write("\n\n")
+                with open(".coverage-output-diff", "r") as coverageTable:
+                    for line in coverageTable:
+                        f.write(line)
+                f.write("\n\n")
+                if "${{ inputs.fail_on_decrease }}" == "true":
+                    if "${{ env.PYCOBERTURA_STATUS }}" == "2":
+                        f.write("Code changes increased the number of uncovered lines in at least one file.\n")
+                    if "${{ env.PYCOBERTURA_STATUS }}" == "3":
+                        f.write("Code changes introduced new uncovered statements despite overall coverage improvement.\n")
             f.write("\n\n")
             f.write(":recycle: This comment has been updated with latest results")
 
@@ -168,7 +171,7 @@ runs:
         exit 1
 
     - name: Check coverage decrease
-      if: contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0)
+      if: ${{ inputs.baseline_path != '' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0) }}
       shell: bash
       run: |
         echo "Total Coverage is decreased: ${{ env.TOTAL_DIFF_COVERAGE }}%"
