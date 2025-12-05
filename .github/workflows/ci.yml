@@ -183,7 +183,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        RUN_ID=$(gh run list --branch ${{github.base_ref}} --limit 1 --json databaseId -q '.[0].databaseId')
+        RUN_ID=$(gh run list --branch ${{github.base_ref}} --workflow ci.yml --limit 1 --json databaseId -q '.[0].databaseId')
         echo "TARGET_BRANCH_RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
     - name: Download ${{github.base_ref}} cobertura artifact
