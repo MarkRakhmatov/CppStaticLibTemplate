@@ -137,7 +137,6 @@ runs:
                 for line in coverageTable:
                     f.write(line)
             f.write("\n\n")
-            f.write("_Coverage is \`${{ env.TOTAL_COVERAGE }}%\`_\n")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n")
             f.write("\n\n")
             if '${{ inputs.baseline_path }}' != '':

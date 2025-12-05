@@ -205,6 +205,7 @@ jobs:
       with:
         # Path to the Cobertura XML report.
         path: ./build/coverage.xml
+        # Path to the target branch Cobertura XML report.
         baseline_path: ${{steps.download-baseline-cobertura.outcome != 'failure' && './build/baseline_coveraage/coverage.xml' || '' }}
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
