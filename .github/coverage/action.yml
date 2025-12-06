@@ -96,6 +96,7 @@ runs:
         cat .coverage-output-diff
 
     - name: Get total coverage
+      id: total-coverage
       shell: python
       run: |
         # Get total coverage
@@ -139,7 +140,7 @@ runs:
             )
 
         total = parseTotal(lastLine)
-        with open(os.getenv('GITHUB_ENV'), 'a') as f:
+        with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}\n')
         if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
             lastLineDiff = readLastLine('.coverage-output-diff')
@@ -149,7 +150,7 @@ runs:
                 )
 
             diffTotal = parseTotal(lastLineDiff)
-            with open(os.getenv('GITHUB_ENV'), 'a') as f:
+            with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
                 f.write(f'TOTAL_DIFF_COVERAGE={diffTotal:.2f}\n')
 
     - name: Prepare coverage comment
@@ -191,16 +192,16 @@ runs:
 
     - name: Check threshold
       shell: bash
-      if: contains(inputs.fail, 'true') && (fromJSON(env.TOTAL_COVERAGE) < inputs.threshold)
+      if: contains(inputs.fail, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_COVERAGE) < inputs.threshold)
       run: |
-        echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
+        echo "Total Coverage of ${{ steps.total-coverage.outputs.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
         exit 1
 
     - name: Check coverage decrease
       shell: bash
-      if: ${{ inputs.baseline_path != '' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0) }}
+      if: ${{ inputs.baseline_path != '' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE) < 0) }}
       run: |
-        echo "Total Coverage is decreased: ${{ env.TOTAL_DIFF_COVERAGE }}%"
+        echo "Total Coverage is decreased: ${{ steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE }}%"
         if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" && "${{ inputs.fail_on_decrease }}" == "true" ]]
         then {
           echo "Code changes increased the number of uncovered lines in at least one file."
