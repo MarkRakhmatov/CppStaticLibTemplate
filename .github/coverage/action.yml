@@ -43,22 +43,23 @@ runs:
         python-version: '3.11'
 
     - name: Install pycobertura
-      uses: insightsengineering/pip-action@v2
-      with:
-        packages: pycobertura==3.0.0
+      shell: bash
+      run: |
+        python -m pip install pycobertura==3.0.0
 
     - name: Generate text report
+      shell: bash
       run: |
         mkdir -p coverage-action
         cp ${{ inputs.path }} coverage-action/
         pycobertura show ${{ inputs.path }} --format markdown --output .coverage-output
         cat .coverage-output
-      shell: bash
+
 
     - name: Get base branch last run id
+      shell: bash
       id: base-run-id
       if: ${{ github.base_ref != ''}}
-      shell: bash
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
@@ -84,6 +85,7 @@ runs:
         path: ${{inputs.path}}
 
     - name: Generate diff report
+      shell: bash
       id: gen-diff-report
       if: ${{steps.download-baseline-cobertura.outcome != 'failure'}}
       run: |
@@ -95,7 +97,6 @@ runs:
           exit 1
         fi
         cat .coverage-output-diff
-      shell: bash
 
     - name: Get total coverage
       shell: python
@@ -192,15 +193,15 @@ runs:
         path: .coverage-output-message
 
     - name: Check threshold
-      if: contains(inputs.fail, 'true') && (fromJSON(env.TOTAL_COVERAGE) < inputs.threshold)
       shell: bash
+      if: contains(inputs.fail, 'true') && (fromJSON(env.TOTAL_COVERAGE) < inputs.threshold)
       run: |
         echo "Total Coverage of ${{ env.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
         exit 1
 
     - name: Check coverage decrease
-      if: ${{ inputs.baseline_path != '' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0) }}
       shell: bash
+      if: ${{ inputs.baseline_path != '' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(env.TOTAL_DIFF_COVERAGE) < 0) }}
       run: |
         echo "Total Coverage is decreased: ${{ env.TOTAL_DIFF_COVERAGE }}%"
         if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" && "${{ inputs.fail_on_decrease }}" == "true" ]]
@@ -218,9 +219,9 @@ runs:
         exit 1
 
     - name: Clean up intermediate files
+      shell: bash
       if: always()
       run: |
         rm -rf coverage-action .coverage-output \
           .coverage-output-diff \
           .coverage-output-diff-message
-      shell: bash
