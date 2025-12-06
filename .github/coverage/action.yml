@@ -50,11 +50,8 @@ runs:
     - name: Generate text report
       shell: bash
       run: |
-        mkdir -p coverage-action
-        cp ${{ inputs.path }} coverage-action/
         pycobertura show ${{ inputs.path }} --format markdown --output .coverage-output
         cat .coverage-output
-
 
     - name: Get base branch last run id
       shell: bash
