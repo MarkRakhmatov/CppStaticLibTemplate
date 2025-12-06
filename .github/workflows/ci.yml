@@ -10,7 +10,6 @@ on:
       - develop
 
 env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   PROJECT_NAME: CppStaticLib
 
   CLANG_COMPILER: "clang++"
@@ -197,7 +196,7 @@ jobs:
         # Unique name of coverage artifact to upload/download.
         # Use branch name and other matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
-        artifact_name: "${{ env.BRANCH_NAME }} ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        artifact_name: "${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         # Publish the rendered output as a PR comment
         publish: true
         # Separate comment for each job in matrix
