@@ -56,6 +56,7 @@ runs:
       shell: bash
 
     - name: Get base branch last run id
+      id: base-run-id
       if: ${{ github.base_ref != ''}}
       shell: bash
       env:
@@ -72,7 +73,7 @@ runs:
       uses: actions/download-artifact@v4
       with:
         github-token: ${{ github.token }}
-        run-id: ${{env.TARGET_BRANCH_RUN_ID}}
+        run-id: ${{steps.base-run-id.outputs.TARGET_BRANCH_RUN_ID}}
         name: ${{inputs.artifact_name}}
         path: coverage-action/prev
 
