@@ -168,7 +168,7 @@ runs:
             f.write("\n\n")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n")
             f.write("\n\n")
-            if '${{ inputs.baseline_path }}' != '':
+            if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
                 f.write("### Coverage diff")
                 f.write("\n\n")
                 with open(".coverage-output-diff", "r") as coverageTable:
