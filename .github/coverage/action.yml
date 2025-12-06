@@ -85,7 +85,6 @@ runs:
         path: ${{inputs.path}}
 
     - name: Generate diff report
-      if: ${{ inputs.baseline_path != '' }}
       id: gen-diff-report
       if: ${{steps.download-baseline-cobertura.outcome != 'failure'}}
       run: |
