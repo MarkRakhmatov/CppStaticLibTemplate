@@ -9,12 +9,10 @@ inputs:
     description: Path to the Cobertura coverage XML report.
     required: false
     default: coverage.xml
-  baseline_path:
-    description: Path to the baseline Cobertura coverage XML report. If passed diff will be generated and published
   artifact_name:
     description: Unique name of coverage artifact to upload/download.
     required: false
-    default: coverage.xml
+    default: coverage
   threshold:
     description: The minimum allowed coverage percentage, as a real number.
     required: false
@@ -88,9 +86,6 @@ runs:
       id: gen-diff-report
       if: ${{steps.download-baseline-cobertura.outcome != 'failure'}}
       run: |
-        mkdir -p coverage-action
-        cp ${{ inputs.path }} coverage-action/
-        pycobertura diff --format markdown --output .coverage-output-diff ${{ inputs.baseline_path }} ${{ inputs.path }}
         pycobertura diff --no-color --no-source --format markdown coverage-action/prev/coverage.xml ${{ inputs.path }} \
         --output .coverage-output-diff && pycobertura_status=$? || pycobertura_status=$?
         echo "PYCOBERTURA_STATUS=$pycobertura_status" >> $GITHUB_OUTPUT
@@ -145,9 +140,7 @@ runs:
             )
 
         total = parseTotal(lastLine)
-        print(f'TOTAL coverage: {total}%')
         with open(os.getenv('GITHUB_ENV'), 'a') as f:
-            f.write(f'TOTAL_COVERAGE={total:.2f}')
             f.write(f'TOTAL_COVERAGE={total:.2f}\n')
         if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
             lastLineDiff = readLastLine('.coverage-output-diff')
@@ -172,17 +165,8 @@ runs:
                 for line in coverageTable:
                     f.write(line)
             f.write("\n\n")
-            f.write("Results for commit: ${{ github.sha }}")
             f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n")
             f.write("\n\n")
-            f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_")
-
-
-
-
-
-
-
             if '${{ inputs.baseline_path }}' != '':
                 f.write("### Coverage diff")
                 f.write("\n\n")
@@ -197,7 +181,6 @@ runs:
                         f.write("Code changes introduced new uncovered statements despite overall coverage improvement.\n")
             f.write("\n\n")
             f.write(":recycle: This comment has been updated with latest results")
-
 
     - name: Post as comment
       if: contains(inputs.publish, 'true')
