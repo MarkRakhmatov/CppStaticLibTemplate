@@ -200,7 +200,7 @@ jobs:
         # Publish the rendered output as a PR comment
         publish: true
         # Separate comment for each job in matrix
-        comment_header: "## 🧪 Code Coverage Summary ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        comment_header: "## 🧪 Code Coverage Summary for ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - name: CPack
       if: matrix.package_generator != ''
