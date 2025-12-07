@@ -102,6 +102,7 @@ runs:
         path: coverage-action/prev
 
     - name: Coverage - Upload artifact
+      if: ${{ inputs.diff == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{inputs.artifact_name}}
@@ -110,7 +111,7 @@ runs:
     - name: Generate diff report
       shell: bash
       id: gen-diff-report
-      if: ${{steps.download-baseline-cobertura.outcome != 'failure'}}
+      if: ${{inputs.diff == 'true' && steps.download-baseline-cobertura.outcome != 'failure'}}
       run: |
         pycobertura diff --no-color --no-source --format markdown coverage-action/prev/coverage.xml ${{ inputs.path }}/${{ inputs.report_name }} \
         --output .coverage-output-diff && pycobertura_status=$? || pycobertura_status=$?
@@ -168,7 +169,7 @@ runs:
         total = parseTotal(lastLine)
         with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
             f.write(f'TOTAL_COVERAGE={total:.2f}\n')
-        if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
+        if "${{inputs.diff}}" == "true" and "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
             lastLineDiff = readLastLine('.coverage-output-diff')
             if lastLineDiff == "":
                 raise SystemExit(
@@ -193,7 +194,7 @@ runs:
             f.write("\n\n")
             f.write("_Minimum allowed coverage is \`${{ inputs.min }}%\`_\n")
             f.write("\n\n")
-            if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
+            if "${{inputs.diff}}" == "true" and "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
                 f.write("### Coverage diff")
                 f.write("\n\n")
                 with open(".coverage-output-diff", "r") as coverageTable:
