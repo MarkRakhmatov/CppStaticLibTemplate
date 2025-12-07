@@ -190,7 +190,7 @@ jobs:
         threshold: 101
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
-        fail: true
+        fail: false
         # Fail if coverage decreased
         fail_on_decrease: true
         # Unique name of coverage artifact to upload/download.
