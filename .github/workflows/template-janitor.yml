@@ -33,7 +33,7 @@ jobs:
           - Debug
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Get organization and project name 
         run: |
@@ -147,7 +147,7 @@ jobs:
           - Debug
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Get organization and project name 
         run: |

@@ -86,7 +86,7 @@ jobs:
             cpp_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
