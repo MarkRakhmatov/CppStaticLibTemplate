@@ -122,7 +122,7 @@ jobs:
         ninja: true
         vcpkg: false
         ccache: true
-        clangtidy: ${{ env.CLANG_TIDY_VERSION }}
+        clangtidy: ${{ contains(matrix.os, 'ubuntu' ) && env.CLANG_TIDY_VERSION || false }}
 
 
         cppcheck: true
@@ -200,7 +200,7 @@ jobs:
         # Fail if coverage decreased
         fail_diff_decrease: true
         # Unique name of coverage artifact to upload/download.
-        # Use branch name and other matrix delails to make it unique,
+        # Use matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
         artifact_name: "${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
