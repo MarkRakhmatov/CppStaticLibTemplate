@@ -8,21 +8,29 @@ inputs:
   path:
     description: Path to the Cobertura coverage XML report.
     required: false
+    default: .
+  report_name:
+    description: Filename of the Cobertura coverage XML report.
+    required: false
     default: coverage.xml
   artifact_name:
     description: Unique name of coverage artifact to upload/download.
     required: false
     default: coverage
-  threshold:
+  min:
     description: The minimum allowed coverage percentage, as a real number.
     required: false
     default: 0
-  fail:
+  fail_min:
     description: Fail the action when the minimum coverage was not met.
     required: false
     default: true
-  fail_on_decrease:
-    description: Fail the action when the coverage decrease
+  diff:
+    description: Load cobertura report from target branch and create diff report
+    required: false
+    default: true
+  fail_diff_decrease:
+    description: Fail the action when the coverage decrease. This option ignored if diff == false
     required: false
     default: false
   publish:
@@ -30,13 +38,20 @@ inputs:
     required: false
     default: false
   comment_header:
-    description: Coverage comment header, diplayed on top of PR comment
+    description: Coverage comment header, diplayed on top of PR comment.
     required: false
-    default: ""
+    default: "## 🧪 Coverage Summary"
 
 runs:
   using: composite
   steps:
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if [ '${{ inputs.diff == 'true' && github.base_ref == ''}}' -eq 'true' ]; then
+          echo "Diff requested, but base ref is empty, please use this action ONLY in pull requests"
+          exit 1
+        fi
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
@@ -50,13 +65,13 @@ runs:
     - name: Generate text report
       shell: bash
       run: |
-        pycobertura show ${{ inputs.path }} --format markdown --output .coverage-output
+        pycobertura show ${{ inputs.path }}/${{ inputs.report_name }} --format markdown --output .coverage-output
         cat .coverage-output
 
     - name: Get base branch last run id
       shell: bash
       id: base-run-id
-      if: ${{ github.base_ref != ''}}
+      if: ${{ inputs.diff == 'true' }}
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
@@ -65,7 +80,7 @@ runs:
 
     - name: Download ${{github.base_ref}} cobertura artifact
       id: download-baseline-cobertura
-      if: ${{ github.base_ref != ''}}
+      if: ${{ inputs.diff == 'true' }}
       # if artifact not found, continue
       continue-on-error: true
       uses: actions/download-artifact@v4
@@ -79,14 +94,14 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{inputs.artifact_name}}
-        path: ${{inputs.path}}
+        path: ${{inputs.path}}/${{ inputs.report_name }}
 
     - name: Generate diff report
       shell: bash
       id: gen-diff-report
       if: ${{steps.download-baseline-cobertura.outcome != 'failure'}}
       run: |
-        pycobertura diff --no-color --no-source --format markdown coverage-action/prev/coverage.xml ${{ inputs.path }} \
+        pycobertura diff --no-color --no-source --format markdown coverage-action/prev/coverage.xml ${{ inputs.path }}/${{ inputs.report_name }} \
         --output .coverage-output-diff && pycobertura_status=$? || pycobertura_status=$?
         echo "PYCOBERTURA_STATUS=$pycobertura_status" >> $GITHUB_OUTPUT
         if [ "$pycobertura_status" -eq 1 ]; then
@@ -165,7 +180,7 @@ runs:
                 for line in coverageTable:
                     f.write(line)
             f.write("\n\n")
-            f.write("_Minimum allowed coverage is \`${{ inputs.threshold }}%\`_\n")
+            f.write("_Minimum allowed coverage is \`${{ inputs.min }}%\`_\n")
             f.write("\n\n")
             if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" != "1" and "${{steps.download-baseline-cobertura.outcome}}" != "failure":
                 f.write("### Coverage diff")
@@ -190,25 +205,25 @@ runs:
         header: ${{ inputs.comment_header }}
         path: .coverage-output-message
 
-    - name: Check threshold
+    - name: Check min
       shell: bash
-      if: contains(inputs.fail, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_COVERAGE) < inputs.threshold)
+      if: contains(inputs.fail_min, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_COVERAGE) < inputs.min)
       run: |
-        echo "Total Coverage of ${{ steps.total-coverage.outputs.TOTAL_COVERAGE }}% falls below minimum threshold of ${{inputs.threshold}}%"
+        echo "Total Coverage of ${{ steps.total-coverage.outputs.TOTAL_COVERAGE }}% falls below minimum of ${{inputs.min}}%"
         exit 1
 
     - name: Check coverage decrease
       shell: bash
-      if: ${{ steps.download-baseline-cobertura.outcome != 'failure' && contains(inputs.fail_on_decrease, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE) < 0) }}
+      if: ${{ inputs.diff == 'true' && steps.download-baseline-cobertura.outcome != 'failure' && inputs.fail_diff_decrease == 'true' && (fromJSON(steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE) < 0) }}
       run: |
         echo "Total Coverage is decreased: ${{ steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE }}%"
-        if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" && "${{ inputs.fail_on_decrease }}" == "true" ]]
+        if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" && "${{ inputs.fail_diff_decrease }}" == "true" ]]
         then {
           echo "Code changes increased the number of uncovered lines in at least one file."
           exit 1
         }
         fi
-        if [[ "${{ steps.gen-diff-report.outputs.pycobertura_status }}" == "3" && "${{ inputs.fail_on_decrease }}" == "true" ]]
+        if [[ "${{ steps.gen-diff-report.outputs.pycobertura_status }}" == "3" && "${{ inputs.fail_diff_decrease }}" == "true" ]]
         then {
           echo "Code changes introduced new uncovered statements despite overall coverage improvement."
           exit 1

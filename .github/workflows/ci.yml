@@ -183,16 +183,18 @@ jobs:
       uses: ./.github/coverage
       with:
         # Path to the Cobertura XML report.
-        path: ./build/coverage.xml
+        path: ./build
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        threshold: 75
+        min: 75
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
-        fail: true
+        fail_min: true
+        # Diff with base branch
+        diff: true
         # Fail if coverage decreased
-        fail_on_decrease: true
+        fail_diff_decrease: true
         # Unique name of coverage artifact to upload/download.
         # Use branch name and other matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
@@ -200,7 +202,7 @@ jobs:
         # Publish the rendered output as a PR comment
         publish: true
         # Separate comment for each job in matrix
-        comment_header: "## 🧪 Code Coverage Summary for ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        comment_header: "## 🧪 Coverage for ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - name: CPack
       if: matrix.package_generator != ''
