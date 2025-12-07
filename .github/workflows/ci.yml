@@ -192,7 +192,7 @@ jobs:
         # reuqirements are not satisfied.
         fail: true
         # Fail if coverage decreased
-        fail_on_decrease: false
+        fail_on_decrease: true
         # Unique name of coverage artifact to upload/download.
         # Use branch name and other matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
