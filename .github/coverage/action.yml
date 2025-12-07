@@ -48,8 +48,12 @@ runs:
     - name: Validate inputs
       shell: bash
       run: |
-        if [ '${{ inputs.diff == 'true' && github.base_ref == ''}}' -eq 'true' ]; then
+        if ${{ inputs.diff == 'true' && github.base_ref == ''}}; then
           echo "Diff requested, but base ref is empty, please use this action ONLY in pull requests"
+          exit 1
+        fi
+        if ${{ inputs.min < 0 || github.min > 100 }}; then
+          echo "min value should be in range [0, 100]"
           exit 1
         fi
     - name: Setup Python
