@@ -26,11 +26,11 @@ inputs:
     required: false
     default: true
   diff:
-    description: Load cobertura report from target branch and create diff report
+    description: Load cobertura report from target branch and create diff report.
     required: false
     default: true
   fail_diff_decrease:
-    description: Fail the action when the coverage decrease. This option ignored if diff == false
+    description: Fail the action when the coverage decrease.
     required: false
     default: false
   publish:
@@ -56,6 +56,11 @@ runs:
         if ${{ inputs.min < 0 || github.min > 100 }}; then
           echo -e "\e[31mError:\e[0m"
           echo "min value should be in range [0, 100], provided value ${{ inputs.min }}"
+          exit 1
+        fi
+        if ${{ inputs.diff == 'false' && inputs.fail_diff_decrease == 'true' }}; then
+          echo -e "\e[31mError:\e[0m"
+          echo "fail_diff_decrease set to 'true', but diff is set to 'false'"
           exit 1
         fi
     - name: Setup Python
