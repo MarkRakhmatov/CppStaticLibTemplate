@@ -49,11 +49,13 @@ runs:
       shell: bash
       run: |
         if ${{ inputs.diff == 'true' && github.base_ref == ''}}; then
+          echo -e "\e[31mError:\e[0m"
           echo "Diff requested, but base ref is empty, please use this action ONLY in pull requests"
           exit 1
         fi
         if ${{ inputs.min < 0 || github.min > 100 }}; then
-          echo "min value should be in range [0, 100]"
+          echo -e "\e[31mError:\e[0m"
+          echo "min value should be in range [0, 100], provided value ${{ inputs.min }}"
           exit 1
         fi
     - name: Setup Python
@@ -109,7 +111,7 @@ runs:
         --output .coverage-output-diff && pycobertura_status=$? || pycobertura_status=$?
         echo "PYCOBERTURA_STATUS=$pycobertura_status" >> $GITHUB_OUTPUT
         if [ "$pycobertura_status" -eq 1 ]; then
-          echo "Pycobertura exception occurred."
+          echo "\e[31mPycobertura exception occurred.\e[0m"
           exit 1
         fi
         cat .coverage-output-diff
@@ -213,6 +215,7 @@ runs:
       shell: bash
       if: contains(inputs.fail_min, 'true') && (fromJSON(steps.total-coverage.outputs.TOTAL_COVERAGE) < inputs.min)
       run: |
+        echo -e "\e[31mError:\e[0m"
         echo "Total Coverage of ${{ steps.total-coverage.outputs.TOTAL_COVERAGE }}% falls below minimum of ${{inputs.min}}%"
         exit 1
 
@@ -220,14 +223,15 @@ runs:
       shell: bash
       if: ${{ inputs.diff == 'true' && steps.download-baseline-cobertura.outcome != 'failure' && inputs.fail_diff_decrease == 'true' && (fromJSON(steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE) < 0) }}
       run: |
+        echo -e "\e[31mError:\e[0m"
         echo "Total Coverage is decreased: ${{ steps.total-coverage.outputs.TOTAL_DIFF_COVERAGE }}%"
-        if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" && "${{ inputs.fail_diff_decrease }}" == "true" ]]
+        if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2" ]]
         then {
           echo "Code changes increased the number of uncovered lines in at least one file."
           exit 1
         }
         fi
-        if [[ "${{ steps.gen-diff-report.outputs.pycobertura_status }}" == "3" && "${{ inputs.fail_diff_decrease }}" == "true" ]]
+        if [[ "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "3" ]]
         then {
           echo "Code changes introduced new uncovered statements despite overall coverage improvement."
           exit 1
