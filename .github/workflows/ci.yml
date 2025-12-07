@@ -88,13 +88,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Cache
-      uses: ./.github/setup_cache
-      with:
-        compiler: ${{ matrix.cpp_compiler }}
-        build_type: ${{ matrix.build_type }}
-        generator: ${{ matrix.generator }}
-
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.11 pyyaml
@@ -122,8 +115,7 @@ jobs:
         ninja: true
         vcpkg: false
         ccache: true
-        clangtidy: ${{ env.CLANG_TIDY_VERSION }}
-
+        clangtidy: ${{ contains(matrix.os, 'ubuntu' ) && env.CLANG_TIDY_VERSION || false }}
 
         cppcheck: true
 
@@ -183,24 +175,26 @@ jobs:
       uses: ./.github/coverage
       with:
         # Path to the Cobertura XML report.
-        path: ./build/coverage.xml
-        # Minimum total coverage, if you want to the
-        # workflow to enforce it as a standard.
-        # This has no effect if the `fail` arg is set to `false`.
-        threshold: 75
-        # Fail the workflow if the minimum code coverage
-        # reuqirements are not satisfied.
-        fail: true
-        # Fail if coverage decreased
-        fail_on_decrease: true
-        # Unique name of coverage artifact to upload/download.
-        # Use branch name and other matrix delails to make it unique,
-        # because current workflow generates multiple coverage reports for different configurations
-        artifact_name: "${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        path: ./build
         # Publish the rendered output as a PR comment
         publish: true
         # Separate comment for each job in matrix
-        comment_header: "## 🧪 Code Coverage Summary ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        comment_header: "## 🧪 Coverage for ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
+        # Minimum total coverage, if you want to the
+        # workflow to enforce it as a standard.
+        # This has no effect if the `fail` arg is set to `false`.
+        min: 75
+        # Fail the workflow if the minimum code coverage
+        # reuqirements are not satisfied.
+        fail_min: true
+        # Diff with base branch
+        diff: true
+        # Fail if coverage decreased
+        fail_diff_decrease: true
+        # Unique name of coverage artifact to upload/download.
+        # Use matrix delails to make it unique,
+        # because current workflow generates multiple coverage reports for different configurations
+        artifact_name: "${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - name: CPack
       if: matrix.package_generator != ''
