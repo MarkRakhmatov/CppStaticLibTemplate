@@ -174,11 +174,11 @@ runs:
                     for line in coverageTable:
                         f.write(line)
                 f.write("\n\n")
-                if "${{ inputs.fail_on_decrease }}" == "true":
+                if "${{steps.download-baseline-cobertura.outcome}}" != "failure":
                     if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "2":
-                        f.write("Code changes increased the number of uncovered lines in at least one file.\n")
+                        f.write("⚠ Code changes increased the number of uncovered lines in at least one file.\n")
                     if "${{ steps.gen-diff-report.outputs.PYCOBERTURA_STATUS }}" == "3":
-                        f.write("Code changes introduced new uncovered statements despite overall coverage improvement.\n")
+                        f.write("🫤 Code changes introduced new uncovered statements despite overall coverage improvement.\n")
             f.write("\n\n")
             f.write(":recycle: This comment has been updated with latest results")
 
