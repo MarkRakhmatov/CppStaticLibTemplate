@@ -59,9 +59,7 @@ runs:
           exit 1
         fi
         if ${{ inputs.diff == 'false' && inputs.fail_diff_decrease == 'true' }}; then
-          echo -e "\e[31mError:\e[0m"
-          echo "fail_diff_decrease set to 'true', but diff is set to 'false'"
-          exit 1
+          echo "::warning::fail_diff_decrease set to 'true', but diff is set to 'false'"
         fi
     - name: Setup Python
       uses: actions/setup-python@v5

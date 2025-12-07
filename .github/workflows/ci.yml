@@ -188,7 +188,7 @@ jobs:
         # reuqirements are not satisfied.
         fail_min: true
         # Diff with base branch
-        diff: true
+        diff: github.event_name == 'pull_request'
         # Fail if coverage decreased
         fail_diff_decrease: true
         # Unique name of coverage artifact to upload/download.
