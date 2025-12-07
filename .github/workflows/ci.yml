@@ -187,12 +187,12 @@ jobs:
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        threshold: 101
+        threshold: 75
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
-        fail: false
+        fail: true
         # Fail if coverage decreased
-        fail_on_decrease: true
+        fail_on_decrease: false
         # Unique name of coverage artifact to upload/download.
         # Use branch name and other matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
