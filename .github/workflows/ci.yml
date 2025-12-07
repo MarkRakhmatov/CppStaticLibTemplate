@@ -88,13 +88,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Cache
-      uses: ./.github/setup_cache
-      with:
-        compiler: ${{ matrix.cpp_compiler }}
-        build_type: ${{ matrix.build_type }}
-        generator: ${{ matrix.generator }}
-
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.11 pyyaml
@@ -122,8 +115,7 @@ jobs:
         ninja: true
         vcpkg: false
         ccache: true
-        clangtidy: ${{ env.CLANG_TIDY_VERSION }}
-
+        clangtidy: ${{ contains(matrix.os, 'ubuntu' ) && env.CLANG_TIDY_VERSION || false }}
 
         cppcheck: true
 
@@ -164,7 +156,7 @@ jobs:
       run: |
         ctest -C ${{matrix.build_type}} -V
 
-    - name: Unix - Coverage
+    - name: Coverage - Collect on Unix
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}/build
       # Execute tests defined by the CMake configuration.
@@ -172,49 +164,37 @@ jobs:
       run: |
         gcovr --root ../ --xml-pretty --xml ${{ github.workspace }}/build/coverage.xml --gcov-executable '${{ matrix.gcov_executable }}'
 
-    - name: Windows - Coverage
+    - name: Coverage - Collect on Windows
       if: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}
       run: |
         OpenCppCoverage.exe --export_type cobertura:${{ github.workspace }}\build\coverage.xml --cover_children --excluded_sources "test\\" --excluded_sources "build\\" --sources "${{ github.workspace }}\src" --sources "${{ github.workspace }}\include" -- ${{ github.workspace }}\build\test\Debug\${{ env.PROJECT_NAME }}Tests.exe
 
-    - name: Produce the coverage report
+    - name: Coverage - Check
       if: ${{ matrix.build_type == 'Debug'}}
-      uses: insightsengineering/coverage-action@v3
+      uses: ./.github/coverage
       with:
         # Path to the Cobertura XML report.
-        path: ./build/coverage.xml
+        path: ./build
+        # Publish the rendered output as a PR comment
+        publish: true
+        # Separate comment for each job in matrix
+        comment_header: "## 🧪 Coverage for ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        threshold: 75
+        min: 75
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
-        fail: true
-        # Publish the rendered output as a PR comment
-        publish: true
-        # Create a coverage diff report.
+        fail_min: true
+        # Diff with base branch
         diff: true
-        # Branch to diff against.
-        # Compare the current coverage to the coverage
-        # determined on this branch.
-        diff-branch: main
-        # This is where the coverage reports for the
-        # `diff-branch` are stored.
-        # Branch is created if it doesn't already exist'.
-        diff-storage: _xml_coverage_reports
-        # Subdirectory in the diff-storage branch where the XML reports will be stored.
-        storage-subdirectory: coverage-${{matrix.os}}-${{matrix.cpp_compiler}}
-        # A custom title that can be added to the code
-        # coverage summary in the PR comment.
-        coverage-summary-title: Code Coverage Summary ${{matrix.os}}-${{matrix.cpp_compiler}}
-        # Failure modes for coverage regression detection:
-        # Fail if any changed file has more uncovered lines (pycobertura exit code 2)
-        uncovered-statements-increase-failure: false
-        # Fail if new uncovered statements are introduced despite overall improvement (pycobertura exit code 3)
-        new-uncovered-statements-failure: false
-        # Fail if the overall coverage percentage decreases (more forgiving approach)
-        coverage-rate-reduction-failure: true
+        # Fail if coverage decreased
+        fail_diff_decrease: true
+        # Unique name of coverage artifact to upload/download.
+        # Use matrix delails to make it unique,
+        # because current workflow generates multiple coverage reports for different configurations
+        artifact_name: "${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.generator}}"
 
     - name: CPack
       if: matrix.package_generator != ''
