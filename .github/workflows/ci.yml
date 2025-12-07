@@ -88,13 +88,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Cache
-      uses: ./.github/setup_cache
-      with:
-        compiler: ${{ matrix.cpp_compiler }}
-        build_type: ${{ matrix.build_type }}
-        generator: ${{ matrix.generator }}
-
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.11 pyyaml
@@ -123,7 +116,6 @@ jobs:
         vcpkg: false
         ccache: true
         clangtidy: ${{ contains(matrix.os, 'ubuntu' ) && env.CLANG_TIDY_VERSION || false }}
-
 
         cppcheck: true
 
