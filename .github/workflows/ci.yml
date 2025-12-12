@@ -10,8 +10,6 @@ on:
       - develop
 
 env:
-  PROJECT_NAME: CppStaticLib
-
   CLANG_COMPILER: "clang++"
   CLANG_TIDY_VERSION: "19.1.1"
 
@@ -104,6 +102,11 @@ jobs:
         extensions: 'h,cpp,hpp'
         clangFormatVersion: 19
         inplace: True
+
+    - name: Project Name
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: '.github/constants.env'
 
     - name: Setup Cpp
       uses: aminya/setup-cpp@v1
