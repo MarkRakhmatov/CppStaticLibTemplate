@@ -100,7 +100,6 @@ runs:
         path: coverage-action/prev
 
     - name: Coverage - Upload artifact
-      if: ${{ inputs.diff == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{inputs.artifact_name}}
