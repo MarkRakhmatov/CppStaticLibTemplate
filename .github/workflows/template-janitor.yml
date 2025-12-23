@@ -75,6 +75,7 @@ jobs:
           sed -i "s|%%description%%|${{ fromJson(steps.get-repo-meta.outputs.data).description }}|g" ${{ env.TEMPLATES_PATH }}/README.md
           mv include/CppStaticLib include/${{ env.NEW_SAFE_PROJECT }}
           mv include/${{ env.NEW_SAFE_PROJECT }}/CppStaticLib.hpp include/${{ env.NEW_SAFE_PROJECT }}/${{ env.NEW_SAFE_PROJECT }}.hpp
+          mv src/CppStaticLib.cpp src/${{ env.NEW_SAFE_PROJECT }}.cpp
           mv test/src/CppStaticLib_test.cpp test/src/${{ env.NEW_SAFE_PROJECT }}_test.cpp
           cp ${{ env.TEMPLATES_PATH }}/README.md README.md
 
