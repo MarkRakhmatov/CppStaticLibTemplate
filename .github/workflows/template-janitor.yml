@@ -76,6 +76,8 @@ jobs:
           mv include/CppStaticLib include/${{ env.NEW_SAFE_PROJECT }}
           mv include/${{ env.NEW_SAFE_PROJECT }}/CppStaticLib.hpp include/${{ env.NEW_SAFE_PROJECT }}/${{ env.NEW_SAFE_PROJECT }}.hpp
           mv test/src/CppStaticLib_test.cpp test/src/${{ env.NEW_SAFE_PROJECT }}_test.cpp
+          mv fuzz_test/src/CppStaticLib_test.cpp fuzz_test/src/${{ env.NEW_SAFE_PROJECT }}_test.cpp
+
           cp ${{ env.TEMPLATES_PATH }}/README.md README.md
 
       - name: Print diff after replacement
