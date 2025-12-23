@@ -8,7 +8,7 @@
 ### By default:
 * Warnings as errors
 * clang-tidy and cppcheck static analysis
-* CPM for dependencies
+* [CPM](https://github.com/cpm-cmake/CPM.cmake) for dependencies
 
 ### It includes
 
@@ -28,3 +28,16 @@
 | MSVC |:heavy_check_mark: | |
 | clang | | :heavy_check_mark: |
 | gcc | | :heavy_check_mark: |
+
+### Usage
+To use %%myproject%% library in cmake project:
+
+```
+CPMAddPackage("gh:%%myorg%%/%%myproject%%@v0.1.0")
+```
+
+Link %%myproject%% library to your target
+```
+target_link_libraries(your_target PRIVATE %%myproject%%)
+```
+

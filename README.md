@@ -8,7 +8,7 @@ C++ 23 static library template
 ### By default:
 * Warnings as errors
 * clang-tidy and cppcheck static analysis
-* CPM for dependencies
+* [CPM](https://github.com/cpm-cmake/CPM.cmake) for dependencies
 
 ### It includes
 
