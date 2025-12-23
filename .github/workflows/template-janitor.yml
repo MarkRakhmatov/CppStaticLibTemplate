@@ -122,6 +122,7 @@ jobs:
           cmake -S . -B ./build -G "${{ matrix.generator }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.build_type }}
           # Build it because we may have broken something in the cpp/hpp files
           cmake --build build
+          rm -r ./build
 
       - uses: EndBug/add-and-commit@v9
         # only commit and push if we are not a template project anymore!
@@ -177,7 +178,7 @@ jobs:
           echo "NEW_REPOSITORY=TEST_REPOSITORY" >> $GITHUB_ENV
 
 
-      # Rename all cpp_starter_project occurrences to current repository and remove this workflow
+      # Rename all CppStaticLib occurrences to current repository and remove this workflow
       - name: Update repository to match new template information
         run: |
           # Update the README and template files to match the new org / repository names 
