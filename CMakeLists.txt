@@ -8,7 +8,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(
   CppStaticLib
-  VERSION 1.0
+  VERSION 0.1.0
   LANGUAGES CXX
 )
 

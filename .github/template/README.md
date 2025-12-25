@@ -14,7 +14,7 @@
 
 * unit testing using [UT/μt](https://github.com/boost-ext/ut)
 * fuzz testing using [fuzztest](https://github.com/google/fuzztest)
-* single GitHub action workflow
+* autocreation of tags in main branch (commit title should contain version number, for example `0.1.0`)
 
 ### It requires
 
@@ -30,6 +30,7 @@
 | gcc | | :heavy_check_mark: |
 
 ### Usage
+#### CMake
 To use %%myproject%% library in cmake project:
 
 ```
@@ -41,3 +42,5 @@ Link %%myproject%% library to your target
 target_link_libraries(your_target PRIVATE %%myproject%%)
 ```
 
+#### Examples
+TODO: add code examples
