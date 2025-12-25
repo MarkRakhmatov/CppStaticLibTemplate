@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix-autotag
 
 jobs:
   tag:
@@ -12,6 +13,7 @@ jobs:
     - uses: christophebedard/tag-version-commit@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        version_regex: '^[0-9]+\.[0-9]+\.[0-9]:.*'
-        version_assertion_command: 'grep -q "project\([\s\S]*VERSION $version" CMakeLists.txt'
+        version_regex: '^[0-9]+\.[0-9]+\.[0-9]'
+        version_assertion_command: 'grep -q "project\([\s\S]*VERSION .$version[\s\S]*\)" CMakeLists.txt'
         version_tag_prefix: 'v'
+        dry_run: true
