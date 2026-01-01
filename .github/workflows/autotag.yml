@@ -1,8 +1,5 @@
 name: autotag
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   tag:
@@ -15,3 +12,4 @@ jobs:
     - uses: ./.github/tag
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        dry_run: ${{ github.ref_name == 'main' }}
