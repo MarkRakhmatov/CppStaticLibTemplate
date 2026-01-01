@@ -49,6 +49,7 @@ runs:
       id: current_ver
       shell: python
       run: |
+        # Extract major, minor, tag
         import os
 
         def isInt(s: str):
@@ -77,9 +78,9 @@ runs:
                     f"failed to extract version number from tag: {latest_tag}"
                 )
             prefix, major = parseIntWithPrefix(parts[0])
-            if prefix != "${{ inputs.version_prefix }}":
+            if prefix != "" and prefix != "${{ inputs.version_prefix }}":
                 raise SystemExit(
-                    f"invalid prefix in version number of tag: {latest_tag}"
+                    f"invalid prefix in major part of version number of tag: {latest_tag}"
                 )
 
             prefix, minor = parseIntWithPrefix(parts[1])
@@ -96,8 +97,9 @@ runs:
             return major, minor, patch
 
         latest_tag = "${{ steps.get_latest_tag.outputs.latest_tag }}"
+        print(f"Latest tag: '{latest_tag}'")
         if latest_tag == "":
-            latest_tag = "v0.0.0"
+            latest_tag = "0.0.0"
         parts = latest_tag.split('-')
         major, minor, patch = majMinPat(parts[0])
         with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
@@ -109,6 +111,7 @@ runs:
       id: ver
       shell: python
       run: |
+        # New version
         import os
 
         def parseHeader(header: str):
@@ -146,7 +149,6 @@ runs:
                 )
             return 0, 0, 0
 
-
         commit = "${{ steps.get_message.outputs.HEAD_COMMIT_MESSAGE }}"
         major = ${{steps.current_ver.outputs.MAJOR}}
         minor = ${{steps.current_ver.outputs.MINOR}}
@@ -169,8 +171,13 @@ runs:
         pre_release = "" if "${{ inputs.pre_release }}" == "" else "-${{ inputs.pre_release }}"
         build = "" if "${{ inputs.build }}" == "" else "+${{ inputs.build }}"
         with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
-            f.write(f'VERSION=${{ inputs.version_prefix }}{major}.{minor}.{patch}{pre_release}{build}\n')
-            f.write(f'SKIP_TAG_CREATION={"true" if majDiff + minDiff + patDiff == 0 else "false"}\n')
+            ver = f"${{ inputs.version_prefix }}{major}.{minor}.{patch}{pre_release}{build}"
+            f.write(f'VERSION={ver}\n')
+            print(f"VERSION: '{ver}'")
+            skip_tag_creation = majDiff + minDiff + patDiff == 0
+            if skip_tag_creation:
+                print("SKIP_TAG_CREATION: no diff")
+            f.write(f'SKIP_TAG_CREATION={"true" if skip_tag_creation else "false"}\n')
 
     - name: Set up git config
       if: inputs.dry_run == 'false' && steps.ver.outputs.SKIP_TAG_CREATION == 'false'
