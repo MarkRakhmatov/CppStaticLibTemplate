@@ -89,7 +89,7 @@ runs:
                     f"unexpected prefix in minor part of version number of tag: {latest_tag}"
                 )
 
-            prefix, patch = parseIntWithPrefix(parts[1])
+            prefix, patch = parseIntWithPrefix(parts[2])
             if prefix != "":
                 raise SystemExit(
                     f"unexpected prefix in patch part of version number of tag: {latest_tag}"
