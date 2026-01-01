@@ -16,8 +16,6 @@ env:
 jobs:
   build:
     permissions:
-      # permission required to create branch with coverage
-      contents: write
       # permission required to leave coverage comment
       pull-requests: write
 
