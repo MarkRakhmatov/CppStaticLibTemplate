@@ -15,5 +15,4 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./.github/tag
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        dry_run: true
+        token: ${{ secrets.GITHUB_TOKEN }}S
