@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix-tags-multiline-commit
 
 jobs:
   tag:

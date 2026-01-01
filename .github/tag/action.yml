@@ -33,7 +33,10 @@ runs:
     - name: Get the last commit message
       id: get_message
       shell: bash
-      run: echo "HEAD_COMMIT_MESSAGE=$(git show -s --format=%B)" >> "$GITHUB_OUTPUT"
+      run: |
+        echo "HEAD_COMMIT_MESSAGE<<EOF" >> "$GITHUB_OUTPUT"
+        echo "$(git show -s --format=%B)" >> "$GITHUB_OUTPUT"
+        echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Use the commit message
       shell: bash
@@ -149,7 +152,7 @@ runs:
                 )
             return 0, 0, 0
 
-        commit = "${{ steps.get_message.outputs.HEAD_COMMIT_MESSAGE }}"
+        commit = """${{ steps.get_message.outputs.HEAD_COMMIT_MESSAGE }}"""
         major = ${{steps.current_ver.outputs.MAJOR}}
         minor = ${{steps.current_ver.outputs.MINOR}}
         patch = ${{steps.current_ver.outputs.PATCH}}
