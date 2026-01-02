@@ -12,4 +12,4 @@ jobs:
     - uses: ./.github/tag
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        dry_run: ${{ github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag' }}
+        dry_run: ${{ github.ref_name != 'main' && github.ref_name != 'publish-release-for-tag' }}
