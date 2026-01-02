@@ -8,6 +8,7 @@ on:
     branches:
       - main
       - develop
+      - publish-release-for-tag
 
 env:
   CLANG_COMPILER: "clang++"
