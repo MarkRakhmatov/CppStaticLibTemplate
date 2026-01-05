@@ -247,6 +247,5 @@ jobs:
       if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag && matrix.package_generator != '' }}
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
-        working_directory: ./build
         files: |
-          *-${{ matrix.build_type }}-*.*
+          ./build/*-${{ matrix.build_type }}-*.*
