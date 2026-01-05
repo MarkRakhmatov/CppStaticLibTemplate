@@ -234,6 +234,8 @@ jobs:
         exists=$([[ $tag == ${{ needs.prepare_new_version.outputs.version }} ]] && echo "true" || echo "false")
         echo "exists == $exists "
         echo "exists=$exists" >> $GITHUB_OUTPUT
+        echo "ls -al"
+        ls -al
 
     - uses: ./.github/tag
       id: create_tag
@@ -248,4 +250,4 @@ jobs:
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
-          build/*
+          ./build/*
