@@ -99,8 +99,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
-      with:
-        fetch-depth: 0 # fetch all history to determine the current state
 
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
@@ -220,6 +218,10 @@ jobs:
       working-directory: ./build
       run: |
         cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
+
+    - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # fetch all history to determine the current state
 
     - name: Check if tag for new version exists
       id: new_ver_tag_check
