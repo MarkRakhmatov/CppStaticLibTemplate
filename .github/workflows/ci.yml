@@ -245,8 +245,7 @@ jobs:
     - name: Publish Tagged Release
       uses: softprops/action-gh-release@v2
       if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag && matrix.package_generator != '' }}
-      working-directory: ./build
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
-          **/*-*${{ matrix.build_type }}*-*.*
+          **/build/*-${{ matrix.build_type }}-*.*
