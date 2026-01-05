@@ -255,4 +255,4 @@ jobs:
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
-          packages
+          packages/*/*-Release-*.*
