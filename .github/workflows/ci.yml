@@ -224,7 +224,7 @@ jobs:
       if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && matrix.package_generator != '' }}
       shell: bash
       run: |
-        git fetch --all --tags --always
+        git fetch --all --tags
         tag="$(git describe --tags --always --abbrev=0)"
         echo "previous_tag == $tag"
         echo "new tag ${{ needs.prepare_new_version.outputs.version }}"
