@@ -218,6 +218,7 @@ jobs:
         cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
 
     - name: Upload package artifact
+      if: matrix.package_generator != ''
       uses: actions/upload-artifact@v4
       with:
         name: "package-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.generator}}"
@@ -231,6 +232,8 @@ jobs:
       # permission required to create tag
       contents: write
     steps:
+    - uses: actions/checkout@v6
+
     - uses: ./.github/tag
       id: create_tag
       if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag }}
@@ -242,6 +245,7 @@ jobs:
       with:
         pattern: package-*
         path: packages
+
     - name: Display structure of downloaded files
       run: ls -R
 
