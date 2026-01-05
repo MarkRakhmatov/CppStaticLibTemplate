@@ -15,8 +15,23 @@ env:
   CLANG_TIDY_VERSION: "19.1.1"
 
 jobs:
+  prepare_new_version:
+    name: Prepare version number for commit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: ./.github/semver
+      id: version
+      if: ${{ github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') }}
+    outputs:
+      previous_tag: ${{ steps.version.outputs.previous_tag }}
+      version: ${{ steps.version.outputs.version }}
+
   build:
+    needs: prepare_new_version
     permissions:
+      # permission required to create tag
+      contents: write
       # permission required to leave coverage comment
       pull-requests: write
 
@@ -84,6 +99,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+      with:
+        fetch-depth: 0 # fetch all history to determine the current state
 
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
@@ -204,9 +221,29 @@ jobs:
       run: |
         cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
 
+    - name: Check if tag for new version exists
+      id: new_ver_tag_check
+      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push'}}
+      shell: bash
+      run: |
+        tag="$(git describe --tags --abbrev=0)"
+        echo "previous_tag == $tag"
+        echo "new tag ${{ needs.prepare_new_version.outputs.version }}"
+        exists=$([[ $tag == ${{ needs.prepare_new_version.outputs.version }} ]] && echo "true" || echo "false")
+        echo "exists == $exists "
+        echo "exists=$exists" >> $GITHUB_OUTPUT
+
+    - uses: ./.github/tag
+      id: create_tag
+      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && steps.new_ver_tag_check.outputs.exists == 'false' }}
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        version: ${{ needs.prepare_new_version.outputs.version }}
+
     - name: Publish Tagged Release
       uses: softprops/action-gh-release@v2
-      if: ${{ startsWith(github.ref, 'refs/tags/') && matrix.package_generator != '' }}
+      if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag && matrix.package_generator != '' }}
       with:
+        tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
           build/*-*${{ matrix.build_type }}*-*.*
