@@ -225,7 +225,7 @@ jobs:
 
     - name: Check if tag for new version exists
       id: new_ver_tag_check
-      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push'}}
+      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && matrix.package_generator != '' }}
       shell: bash
       run: |
         tag="$(git describe --tags --abbrev=0)"
@@ -237,7 +237,7 @@ jobs:
 
     - uses: ./.github/tag
       id: create_tag
-      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && steps.new_ver_tag_check.outputs.exists == 'false' }}
+      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && steps.new_ver_tag_check.outputs.exists == 'false' && matrix.package_generator != ''}}
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         version: ${{ needs.prepare_new_version.outputs.version }}
