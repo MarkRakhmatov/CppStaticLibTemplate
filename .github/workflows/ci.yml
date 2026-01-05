@@ -30,8 +30,6 @@ jobs:
   build:
     needs: prepare_new_version
     permissions:
-      # permission required to create tag
-      contents: write
       # permission required to leave coverage comment
       pull-requests: write
 
@@ -219,32 +217,37 @@ jobs:
       run: |
         cpack -C ${{matrix.build_type}} -G ${{matrix.package_generator}}
 
-    - name: Check if tag for new version exists
-      id: new_ver_tag_check
-      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && matrix.package_generator != '' }}
-      shell: bash
-      run: |
-        git fetch --all --tags
-        tag="$(git describe --tags --always --abbrev=0)"
-        echo "previous_tag == $tag"
-        echo "new tag ${{ needs.prepare_new_version.outputs.version }}"
-        exists=$([[ $tag == ${{ needs.prepare_new_version.outputs.version }} ]] && echo "true" || echo "false")
-        echo "exists == $exists "
-        echo "exists=$exists" >> $GITHUB_OUTPUT
-        echo "ls -al"
-        ls -al
+    - name: Upload package artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: "package-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.generator}}"
+        path: build/*-Release-*.*
 
+  tag_and_release:
+    if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push'}}
+    needs: [prepare_new_version, build]
+    permissions:
+      # permission required to create tag
+      contents: write
+    steps:
     - uses: ./.github/tag
       id: create_tag
-      if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push' && steps.new_ver_tag_check.outputs.exists == 'false' && matrix.package_generator != ''}}
+      if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag }}
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         version: ${{ needs.prepare_new_version.outputs.version }}
 
+    - uses: actions/download-artifact@v5
+      with:
+        pattern: package-*
+        path: packages
+    - name: Display structure of downloaded files
+      run: ls -R
+
     - name: Publish Tagged Release
       uses: softprops/action-gh-release@v2
-      if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag && matrix.package_generator != '' }}
+      if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag }}
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
-          build/*-Release-*.*
+          packages
