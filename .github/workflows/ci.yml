@@ -248,4 +248,4 @@ jobs:
       with:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         files: |
-          build/*-*${{ matrix.build_type }}*-*.*
+          **/build/*-*${{ matrix.build_type }}*-*.*
