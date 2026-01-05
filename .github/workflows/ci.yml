@@ -225,6 +225,7 @@ jobs:
 
   tag_and_release:
     if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push'}}
+    runs-on: ubuntu-latest
     needs: [prepare_new_version, build]
     permissions:
       # permission required to create tag
