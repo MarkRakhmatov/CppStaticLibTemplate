@@ -146,6 +146,13 @@ packageProject(
 # ---- Package project ----
 # Experience shows that explicit package naming can help make it easier to sort out potential ABI
 # related issues before they start, while helping you track a build to a specific GIT SHA
+execute_process(
+  COMMAND git rev-parse --short HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_SHORT_SHA
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 set(CPACK_PACKAGE_FILE_NAME
     "${CMAKE_PROJECT_NAME}-${CMAKE_PROJECT_VERSION}-${GIT_SHORT_SHA}-${CMAKE_SYSTEM_NAME}-${CMAKE_BUILD_TYPE}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}"
 )
