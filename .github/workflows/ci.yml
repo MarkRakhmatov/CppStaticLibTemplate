@@ -129,9 +129,9 @@ jobs:
         ninja: ${{ contains(matrix.generator, 'Ninja' )}}
         vcpkg: false
         ccache: true
-        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang' ) && env.CLANG_TIDY_VERSION }}
+        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang' )}}
 
-        cppcheck: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
+        cppcheck: ${{ !contains(matrix.cpp_compiler, 'clang' )}}
 
         gcovr: ${{ contains(matrix.os, 'ubuntu') && matrix.build_type == 'Debug'}}
         opencppcoverage: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
