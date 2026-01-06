@@ -253,6 +253,8 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag }}
       with:
+        name: ${{ needs.prepare_new_version.outputs.version }}
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
+        generate_release_notes: true
         files: |
           packages/*/*-Release-*.*
