@@ -126,12 +126,12 @@ jobs:
         vcvarsall: ${{ contains(matrix.os, 'windows' )}}
 
         cmake: true
-        ninja: true
+        ninja: ${{ contains(matrix.generator, 'Ninja' )}}
         vcpkg: false
         ccache: true
-        clangtidy: ${{ contains(matrix.os, 'ubuntu' ) && env.CLANG_TIDY_VERSION || false }}
+        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang' ) && env.CLANG_TIDY_VERSION }}
 
-        cppcheck: true
+        cppcheck: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
 
         gcovr: ${{ contains(matrix.os, 'ubuntu') && matrix.build_type == 'Debug'}}
         opencppcoverage: ${{ contains(matrix.os, 'windows') && matrix.build_type == 'Debug'}}
@@ -245,9 +245,6 @@ jobs:
       with:
         pattern: package-*
         path: packages
-
-    - name: Display structure of downloaded files
-      run: ls -R
 
     - name: Publish Tagged Release
       uses: softprops/action-gh-release@v2
