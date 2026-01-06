@@ -1,14 +1,11 @@
 name: ci
 on:
   pull_request:
-  release:
-    types: [published]
   push:
     tags:
     branches:
       - main
       - develop
-      - publish-release-for-tag
 
 env:
   CLANG_COMPILER: "clang++"
@@ -20,9 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
+
     - uses: ./.github/semver
       id: version
-      if: ${{ github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') }}
+      if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
+
     outputs:
       previous_tag: ${{ steps.version.outputs.previous_tag }}
       version: ${{ steps.version.outputs.version }}
@@ -225,7 +224,8 @@ jobs:
         path: build/*-Release-*.*
 
   tag_and_release:
-    if: ${{ (github.ref_name == 'main' || github.ref_name == 'publish-release-for-tag') && github.event_name == 'push'}}
+    name: Tag and release
+    if: ${{ github.ref_name == 'main' && github.event_name == 'push'}}
     runs-on: ubuntu-latest
     needs: [prepare_new_version, build]
     permissions:
