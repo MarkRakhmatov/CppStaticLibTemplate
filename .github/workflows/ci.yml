@@ -31,6 +31,7 @@ jobs:
     permissions:
       # permission required to leave coverage comment
       contents: read
+      actions: read
       pull-requests: write
 
     name: ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.build_type}} ${{matrix.generator}} ${{matrix.package_generator}}
