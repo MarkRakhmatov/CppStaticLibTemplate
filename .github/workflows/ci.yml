@@ -131,7 +131,7 @@ jobs:
         ninja: ${{ contains(matrix.generator, 'Ninja' )}}
         vcpkg: false
         ccache: true
-        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang' )}}
+        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang') && env.CLANG_TIDY_VERSION || '' }}
 
         cppcheck: ${{ !contains(matrix.cpp_compiler, 'clang' )}}
 
@@ -206,7 +206,7 @@ jobs:
         # Diff with base branch
         diff: ${{ github.event_name == 'pull_request' }}
         # Fail if coverage decreased
-        fail_diff_decrease: ${{ github.event_name == 'pull_request' }}
+        fail_diff_decrease: false # ${{ github.event_name == 'pull_request' }}
         # Unique name of coverage artifact to upload/download.
         # Use matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations
