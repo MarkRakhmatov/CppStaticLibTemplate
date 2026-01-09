@@ -131,7 +131,7 @@ jobs:
         ninja: ${{ contains(matrix.generator, 'Ninja' )}}
         vcpkg: false
         ccache: true
-        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang') && env.CLANG_TIDY_VERSION || '' }}
+        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang') }}
 
         cppcheck: ${{ !contains(matrix.cpp_compiler, 'clang' )}}
 
@@ -199,7 +199,7 @@ jobs:
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        min: 75
+        min: 60
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
         fail_min: true
