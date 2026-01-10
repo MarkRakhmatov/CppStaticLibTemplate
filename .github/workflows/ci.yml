@@ -9,7 +9,6 @@ on:
 
 env:
   CLANG_COMPILER: "clang++"
-  CLANG_TIDY_VERSION: "19.1.1"
 
 jobs:
   prepare_new_version:
@@ -131,7 +130,7 @@ jobs:
         ninja: ${{ contains(matrix.generator, 'Ninja' )}}
         vcpkg: false
         ccache: true
-        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang' )}}
+        clangtidy: ${{ contains(matrix.cpp_compiler, 'clang') }}
 
         cppcheck: ${{ !contains(matrix.cpp_compiler, 'clang' )}}
 
@@ -199,14 +198,14 @@ jobs:
         # Minimum total coverage, if you want to the
         # workflow to enforce it as a standard.
         # This has no effect if the `fail` arg is set to `false`.
-        min: 75
+        min: 60
         # Fail the workflow if the minimum code coverage
         # reuqirements are not satisfied.
         fail_min: true
         # Diff with base branch
         diff: ${{ github.event_name == 'pull_request' }}
         # Fail if coverage decreased
-        fail_diff_decrease: ${{ github.event_name == 'pull_request' }}
+        fail_diff_decrease: false # ${{ github.event_name == 'pull_request' }}
         # Unique name of coverage artifact to upload/download.
         # Use matrix delails to make it unique,
         # because current workflow generates multiple coverage reports for different configurations

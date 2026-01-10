@@ -20,4 +20,12 @@ namespace csl {
     return input * factorial(input - 1);
   }
 
+  int uncoveredFunction(int value) noexcept {
+    if(value > 0) {
+      return 1;
+    }
+
+    return -1;
+  }
+
 }  // namespace csl
