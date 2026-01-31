@@ -10,13 +10,16 @@ project(
   CppStaticLib
   VERSION 0.1.1
   LANGUAGES CXX
+  DESCRIPTION "C++ 23 static library template"
 )
 
 option(${PROJECT_NAME}_BUILD_TESTS "Build test" OFF)
+option(${PROJECT_NAME}_BUILD_FUZZ_TESTS "Build fuzz tests" OFF)
 option(${PROJECT_NAME}_ENABLE_CODE_ANALYSIS "Run static code analysis" OFF)
 option(${PROJECT_NAME}_ENABLE_COVERAGE "Code coverage" OFF)
 
-option(${PROJECT_NAME}_BUILD_FUZZ_TESTS "Build fuzz tests" OFF)
+option(${PROJECT_NAME}_DOC "Generate documentation using Doxygen" OFF)
+option(${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS "Additional doxygen search paths" "")
 
 # ---- Include guards ----
 
@@ -187,3 +190,56 @@ set(CPACK_PACKAGE_FILE_NAME
 )
 
 include(CPack)
+
+# documentation
+if(${PROJECT_NAME}_DOC)
+  message(STATUS "${PROJECT_NAME}_DOC ON, generating documentation")
+
+  find_program(
+    DOXYGEN_EXECUTABLE doxygen
+    PATHS "$ENV{ProgramFiles}/doxygen/bin" "$ENV{ProgramFiles\(x86\)}/doxygen/bin"
+          "${${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS}"
+  )
+
+  if(NOT DOXYGEN_EXECUTABLE)
+    return()
+  endif()
+  execute_process(
+    COMMAND git describe --abbrev=0 --tags
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_LATEST_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+
+  message(STATUS "Latest git tag of ${PROJECT_NAME}: ${${PROJECT_NAME}_GIT_LATEST_TAG}")
+
+  include(FetchContent)
+  FetchContent_Declare(
+    doxygen-awesome-css
+    URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip
+  )
+  FetchContent_MakeAvailable(doxygen-awesome-css)
+
+  # Save the location the files were cloned into This allows us to get the path to
+  # doxygen-awesome.css
+  FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
+
+  set(DOXYGEN_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
+  set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc)
+
+  set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
+  set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+  configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+
+  # Generate the Doxyfile
+  add_custom_target(
+    doxydocs ALL # 'ALL' makes it part of the default build
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT
+      "Generating
+      doxygen
+      docs
+      "
+  )
+endif()
