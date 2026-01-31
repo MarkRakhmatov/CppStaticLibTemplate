@@ -4,6 +4,11 @@
 
 namespace csl {
 
+  /*!
+   * \brief max input value that will not cause 32 bit integer overflow
+   *
+   * issue was found using fuzz test
+   */
   constexpr int gMaxIntFactorialInput = 12;
 
   std::string getString() { return "cpp static lib example"; }
