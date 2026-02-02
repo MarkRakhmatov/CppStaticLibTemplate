@@ -20,6 +20,7 @@ option(${PROJECT_NAME}_ENABLE_COVERAGE "Code coverage" OFF)
 
 option(${PROJECT_NAME}_DOC "Generate documentation using Doxygen" OFF)
 option(${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS "Additional doxygen search paths" "")
+option(${PROJECT_NAME}_GRAPHVIZ_BIN_PATHS "Graphviz binary paths" "")
 
 # ---- Include guards ----
 
@@ -130,16 +131,25 @@ endif()
 if(${PROJECT_NAME}_DOC)
   message(STATUS "${PROJECT_NAME}_DOC ON, generating documentation")
 
-  find_program(
-    DOXYGEN_EXECUTABLE doxygen
-    PATHS "$ENV{ProgramFiles}/doxygen/bin" "$ENV{ProgramFiles\(x86\)}/doxygen/bin"
-          "${${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS}"
-  )
+  if(${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS)
+    find_program(
+      DOXYGEN_EXECUTABLE doxygen NO_SYSTEM_ENVIRONMENT_PATH NO_DEFAULT_PATH
+      PATHS "${${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS}"
+    )
+  endif()
 
   if(NOT DOXYGEN_EXECUTABLE)
-    message(WARNING "DOXYGEN_EXECUTABLE not found")
-    return()
+    message(STATUS "DOXYGEN_EXECUTABLE not found in: ${${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS}")
+    message(STATUS "Fallback to system paths search")
+    find_program(DOXYGEN_EXECUTABLE doxygen)
+
+    if(NOT DOXYGEN_EXECUTABLE)
+      message(WARNING "DOXYGEN_EXECUTABLE not found")
+      return()
+    endif()
   endif()
+
+  message(STATUS "DOXYGEN_EXECUTABLE found: ${DOXYGEN_EXECUTABLE}")
 
   execute_process(
     COMMAND git describe --abbrev=0 --tags
@@ -163,6 +173,7 @@ if(${PROJECT_NAME}_DOC)
 
   set(DOXYGEN_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/include")
   set(DOXYGEN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc)
+  set(DOXYGEN_DOT_PATH "${${PROJECT_NAME}_GRAPHVIZ_BIN_PATHS}")
 
   set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
   set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
@@ -171,13 +182,9 @@ if(${PROJECT_NAME}_DOC)
   # Generate the Doxyfile
   add_custom_target(
     doxydocs ALL # 'ALL' makes it part of the default build
-    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
+    COMMAND ${DOXYGEN_EXECUTABLE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT
-      "Generating
-      doxygen
-      docs
-      "
+    COMMENT "Generating doxygen docs"
   )
 endif()
 
