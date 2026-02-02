@@ -19,6 +19,9 @@ namespace csl {
    *    *  Detailed description of function
    *
    *  \return hardcoded string
+   *
+   *  \callgraph
+   *  \callergraph
    */
   std::string getString();
 
@@ -43,6 +46,9 @@ namespace csl {
    *
    *  \param input: integer
    *  \return factorial of input
+   *
+   *  \callgraph
+   *  \callergraph
    */
   int factorial(int input) noexcept;
 
@@ -56,6 +62,9 @@ namespace csl {
    *
    *  \param value: integer value
    *  \return some integer value
+   *
+   *  \callgraph
+   *  \callergraph
    */
   int uncoveredFunction(int value) noexcept;
 }  // namespace csl
