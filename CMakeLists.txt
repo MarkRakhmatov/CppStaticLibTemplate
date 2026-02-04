@@ -21,6 +21,7 @@ option(${PROJECT_NAME}_ENABLE_COVERAGE "Code coverage" OFF)
 option(${PROJECT_NAME}_DOC "Generate documentation using Doxygen" OFF)
 option(${PROJECT_NAME}_DOXYGEN_SEARCH_PATHS "Additional doxygen search paths" "")
 option(${PROJECT_NAME}_GRAPHVIZ_BIN_PATHS "Graphviz binary paths" "")
+option(DOXYGEN_PROJECT_NUMBER "Doxygen project number" "")
 
 # ---- Include guards ----
 

@@ -16,7 +16,7 @@
 * fuzz testing using [fuzztest](https://github.com/google/fuzztest)
 * tooling to verify consistent commits format inspired by [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
 * autocreation of [version](https://semver.org/) tags in main branch based on commits
-* Documentation powered by [doxygen](https://www.doxygen.nl) and [doxygen-awesome-css
+* [Documentation](https://%%myorg%%.github.io/%%myproject%%/) powered by [doxygen](https://www.doxygen.nl) and [doxygen-awesome-css
 ](https://github.com/jothepro/doxygen-awesome-css)
 
 To build documentation install doxygen and set CMake variable %%myproject%%_DOC.
