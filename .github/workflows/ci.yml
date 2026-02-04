@@ -32,6 +32,8 @@ jobs:
       contents: read
       actions: read
       pull-requests: write
+      pages: write
+      id-token: write
 
     name: ${{matrix.os}} ${{matrix.cpp_compiler}} ${{matrix.build_type}} ${{matrix.generator}} ${{matrix.package_generator}}
     runs-on: ${{ matrix.os }}
@@ -152,7 +154,7 @@ jobs:
         -D${{ env.PROJECT_NAME }}_BUILD_TESTS=ON
         -D${{ env.PROJECT_NAME }}_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' }}
         -D${{ env.PROJECT_NAME }}_BUILD_FUZZ_TESTS:BOOL=${{ matrix.cpp_compiler == env.CLANG_COMPILER && matrix.build_type == 'Debug' }}
-        -D${{ env.PROJECT_NAME }}_DOC=ON
+        -D${{ env.PROJECT_NAME }}_DOC=${{ matrix.cpp_compiler == env.CLANG_COMPILER && matrix.build_type == 'Release' }}
         -S ${{ github.workspace }}
 
     - name: Build
@@ -227,6 +229,13 @@ jobs:
       with:
         name: "package-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.generator}}"
         path: build/*-Release-*.*
+
+    - name: Deploy Pages
+      if: ${{ matrix.cpp_compiler == env.CLANG_COMPILER && matrix.build_type == 'Release' }}
+      uses: ./.github/pages
+      with:
+        path: './build/doc/html'
+        artifact_name: "docs-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.generator}}"
 
   tag_and_release:
     name: Tag and release
