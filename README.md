@@ -16,7 +16,8 @@ C++ 23 static library template
 * fuzz testing using [fuzztest](https://github.com/google/fuzztest)
 * tooling to verify consistent commits format inspired by [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
 * autocreation of [version](https://semver.org/) tags in main branch based on commits
-* Optional documentation generation from annotations in code using [doxygen](https://www.doxygen.nl)
+* [Documentation](https://markrakhmatov.github.io/CppStaticLibTemplate/) powered by [doxygen](https://www.doxygen.nl) and [doxygen-awesome-css
+](https://github.com/jothepro/doxygen-awesome-css)
 
 #### Commits format
 
