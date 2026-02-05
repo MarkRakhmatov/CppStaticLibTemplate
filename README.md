@@ -16,8 +16,13 @@ C++ 23 static library template
 * fuzz testing using [fuzztest](https://github.com/google/fuzztest)
 * tooling to verify consistent commits format inspired by [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
 * autocreation of [version](https://semver.org/) tags in main branch based on commits
-* [Documentation](https://markrakhmatov.github.io/CppStaticLibTemplate/) powered by [doxygen](https://www.doxygen.nl) and [doxygen-awesome-css
+* [Documentation](https://markrakhmatov.github.io/CppStaticLibTemplate/) powered by [doxygen](https://www.doxygen.nl), [graphviz](https://www.graphviz.org/) and [doxygen-awesome-css
 ](https://github.com/jothepro/doxygen-awesome-css)
+
+  Publishing of documentation to Gitpub Pages, enabled by default(see 'Deploy Pages' job in [CI](https://github.com/%%myorg%%/%%myproject%%/blob/main/.github/workflows/ci.yml)), cofigure repository to enable Pages with "Github Actions" source.
+To build documentation locally, install doxygen and graphviz, set CMake variable %%myproject%%_DOC.
+If doxygen not found, set %%myproject%%_DOXYGEN_SEARCH_PATHS to directory contaning doxygen binaries.
+If dot (graphviz utility) not found, set %%myproject%%_GRAPHVIZ_BIN_PATHS to directory contaning graphviz binaries.
 
 #### Commits format
 
@@ -53,3 +58,13 @@ refactor(parser): reduce heap allocations in parser v2 API
 | MSVC |:heavy_check_mark: | |
 | clang | | :heavy_check_mark: |
 | gcc | | :heavy_check_mark: |
+
+### Usage
+1. Click on 'Use this template', select 'Create a new repository'
+2. After initial commit, template janitor action triggered to cleanup repo (rename files, replace readme, verify that build works)
+3. Clone new repository, rename 'csl' namespace, write your code
+4. Publishing of documentation to Gitpub Pages, enabled by default(see 'Deploy Pages' job in [CI](https://github.com/%%myorg%%/%%myproject%%/blob/main/.github/workflows/ci.yml)), cofigure repository to enable Pages with "Github Actions" source
+5. Commit your changes to main, use [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) (for example 'feat: initial commit')
+6. Wait for CI to complete and create version 0.1.0 of your library
+
+Congrats, now you can focus on your code
