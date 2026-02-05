@@ -16,12 +16,9 @@
 * fuzz testing using [fuzztest](https://github.com/google/fuzztest)
 * tooling to verify consistent commits format inspired by [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
 * autocreation of [version](https://semver.org/) tags in main branch based on commits
-* [Documentation](https://%%myorg%%.github.io/%%myproject%%/) powered by [doxygen](https://www.doxygen.nl) and [doxygen-awesome-css
+* [Documentation](https://%%myorg%%.github.io/%%myproject%%/) powered by [doxygen](https://www.doxygen.nl), [graphviz](https://www.graphviz.org/) and [doxygen-awesome-css
 ](https://github.com/jothepro/doxygen-awesome-css)
 
-To build documentation install doxygen and set CMake variable %%myproject%%_DOC.
-If doxygen not found, set %%myproject%%_DOXYGEN_SEARCH_PATHS to directory contaning doxygen binaries.
-To publish documentation to Gitpub Pages, enable 'Deploy Pages' job in [CI](https://github.com/%%myorg%%/%%myproject%%/blob/main/.github/workflows/ci.yml)
 #### Commits format
 
 1. API breaking change (will increment major version)
