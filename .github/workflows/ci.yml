@@ -107,11 +107,11 @@ jobs:
     - name: Check CMake style
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: |
-      cmake-format -i ./CMakeLists.txt
-      if ! git diff --exit-code ./CMakeLists.txt; then
-        echo "❌ Code style issues detected!"
-        exit 1
-      fi
+        cmake-format -i ./CMakeLists.txt
+        if ! git diff --exit-code ./CMakeLists.txt; then
+          echo "❌ Code style issues detected!"
+          exit 1
+        fi
 
     - uses: DoozyX/clang-format-lint-action@v0.20
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
