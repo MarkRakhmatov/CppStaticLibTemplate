@@ -76,13 +76,13 @@ jobs:
         exclude:
           - os: windows-2022
             cpp_compiler: g++-14
-            package_generator: ZIP
+            package_generator: TBZ2
           - os: windows-2022
             cpp_compiler: clang++
-            package_generator: ZIP
+            package_generator: TBZ2
           - os: ubuntu-24.0
             cpp_compiler: cl
-            package_generator: TBZ2
+            package_generator: ZIP
 
     steps:
     - uses: actions/checkout@v6
