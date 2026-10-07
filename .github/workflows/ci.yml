@@ -61,6 +61,9 @@ jobs:
           - cl
         generator:
           - "Ninja Multi-Config"
+        package_generator:
+          - ZIP
+          - TBZ2
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
           # if you try to use a compiler that does not have gcov set
@@ -70,32 +73,16 @@ jobs:
           - cpp_compiler: clang++
             gcov_executable: "llvm-cov gcov"
 
-          # Set up preferred package generators, for given build configurations
-          - os: windows-2022
-            cpp_compiler: cl
-            generator: "Ninja Multi-Config"
-            build_type: Release
-            package_generator: ZIP
-
-          - os: ubuntu-24.0
-            cpp_compiler: g++-14
-            generator: "Ninja Multi-Config"
-            build_type: Release
-            package_generator: TBZ2
-
-          - os: ubuntu-24.0
-            cpp_compiler: clang++
-            generator: "Ninja Multi-Config"
-            build_type: Release
-            package_generator: TBZ2
-
         exclude:
           - os: windows-2022
             cpp_compiler: g++-14
+            package_generator: ZIP
           - os: windows-2022
             cpp_compiler: clang++
+            package_generator: ZIP
           - os: ubuntu-24.0
             cpp_compiler: cl
+            package_generator: TBZ2
 
     steps:
     - uses: actions/checkout@v6
