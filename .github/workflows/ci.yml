@@ -67,10 +67,12 @@ jobs:
         include:
           - cpp_compiler: g++-14
             gcov_executable: gcov-14
+            generator: "Ninja Multi-Config"
             package_generator: TBZ2
 
           - cpp_compiler: clang++
             gcov_executable: "llvm-cov gcov"
+            generator: "Ninja Multi-Config"
             package_generator: TBZ2
 
         exclude:
