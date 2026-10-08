@@ -67,9 +67,11 @@ jobs:
         include:
           - cpp_compiler: g++-14
             gcov_executable: gcov-14
+            package_generator: TBZ2
 
           - cpp_compiler: clang++
             gcov_executable: "llvm-cov gcov"
+            package_generator: TBZ2
 
         exclude:
           - os: windows-2022
