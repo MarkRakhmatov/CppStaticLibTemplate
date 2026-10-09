@@ -51,7 +51,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         build_type:
           - Release
           - Debug
@@ -71,7 +71,7 @@ jobs:
             gcov_executable: "llvm-cov gcov"
 
           # Set up preferred package generators, for given build configurations
-          - os: windows-latest
+          - os: windows-2022
             cpp_compiler: cl
             generator: "Visual Studio 17 2022"
             build_type: Release
@@ -90,9 +90,9 @@ jobs:
             package_generator: TBZ2
 
         exclude:
-          - os: windows-latest
+          - os: windows-2022
             cpp_compiler: g++-14
-          - os: windows-latest
+          - os: windows-2022
             cpp_compiler: clang++
           - os: ubuntu-latest
             cpp_compiler: cl
@@ -102,11 +102,16 @@ jobs:
 
     - name: Install format dependencies
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
-      run: pip3 install cmake_format==0.6.11 pyyaml
+      run: pip3 install cmake_format==0.6.13 pyyaml
 
     - name: Check CMake style
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
-      run: cmake-format --check ./CMakeLists.txt
+      run: |
+        cmake-format -i ./CMakeLists.txt
+        if ! git diff --exit-code ./CMakeLists.txt; then
+          echo "❌ Code style issues detected!"
+          exit 1
+        fi
 
     - uses: DoozyX/clang-format-lint-action@v0.20
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.cpp_compiler == env.CLANG_COMPILER }}
@@ -262,7 +267,7 @@ jobs:
         path: packages
 
     - name: Publish Tagged Release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       if: ${{ needs.prepare_new_version.outputs.version != needs.prepare_new_version.outputs.previous_tag }}
       with:
         name: ${{ needs.prepare_new_version.outputs.version }}
