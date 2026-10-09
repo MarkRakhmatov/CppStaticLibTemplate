@@ -13,7 +13,7 @@ env:
 jobs:
   prepare_new_version:
     name: Prepare version number for commit
-    runs-on: ubuntu-24.0
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v6
 
@@ -50,7 +50,7 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         os:
-          - ubuntu-24.0
+          - ubuntu-24.04
           - windows-2022
         build_type:
           - Release
@@ -82,7 +82,7 @@ jobs:
           - os: windows-2022
             cpp_compiler: clang++
             package_generator: TBZ2
-          - os: ubuntu-24.0
+          - os: ubuntu-24.04
             cpp_compiler: cl
             package_generator: ZIP
 
@@ -90,11 +90,11 @@ jobs:
     - uses: actions/checkout@v6
 
     - name: Install format dependencies
-      if: ${{ matrix.os == 'ubuntu-24.0' && matrix.cpp_compiler == env.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-24.04' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: pip3 install cmake_format==0.6.13 pyyaml
 
     - name: Check CMake style
-      if: ${{ matrix.os == 'ubuntu-24.0' && matrix.cpp_compiler == env.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-24.04' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       run: |
         cmake-format -i ./CMakeLists.txt
         if ! git diff --exit-code ./CMakeLists.txt; then
@@ -103,7 +103,7 @@ jobs:
         fi
 
     - uses: DoozyX/clang-format-lint-action@v0.20
-      if: ${{ matrix.os == 'ubuntu-24.0' && matrix.cpp_compiler == env.CLANG_COMPILER }}
+      if: ${{ matrix.os == 'ubuntu-24.04' && matrix.cpp_compiler == env.CLANG_COMPILER }}
       with:
         source: '.'
         exclude: './third_party ./external'
@@ -173,7 +173,7 @@ jobs:
         ctest -C ${{matrix.build_type}} -V
 
     - name: Coverage - Collect on Unix
-      if: ${{ matrix.os == 'ubuntu-24.0' && matrix.build_type == 'Debug'}}
+      if: ${{ matrix.os == 'ubuntu-24.04' && matrix.build_type == 'Debug'}}
       working-directory: ${{ github.workspace }}/build
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
@@ -235,7 +235,7 @@ jobs:
   tag_and_release:
     name: Tag and release
     if: ${{ github.ref_name == 'main' && github.event_name == 'push'}}
-    runs-on: ubuntu-24.0
+    runs-on: ubuntu-24.04
     needs: [prepare_new_version, build]
     permissions:
       # permission required to create tag
