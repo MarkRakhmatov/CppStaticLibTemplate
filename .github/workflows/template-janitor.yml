@@ -123,7 +123,7 @@ jobs:
           cmake --build build
           rm -r ./build
 
-      - uses: EndBug/add-and-commit@v9
+      - uses: EndBug/add-and-commit@v10
         # only commit and push if we are not a template project anymore!
         if: fromJson(steps.get-repo-meta.outputs.data).is_template != true
         with:
