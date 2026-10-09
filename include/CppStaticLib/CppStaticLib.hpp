@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CPP_STATIC_LIB_HPP
+#define CPP_STATIC_LIB_HPP
+
 #include <string>
 
 /*! \mainpage CppStaticLib
@@ -68,3 +70,5 @@ namespace csl {
    */
   int uncoveredFunction(int value) noexcept;
 }  // namespace csl
+
+#endif // CPP_STATIC_LIB_HPP
