@@ -78,12 +78,13 @@ jobs:
         exclude:
           - os: windows-2022
             cpp_compiler: g++-14
-            package_generator: TBZ2
           - os: windows-2022
             cpp_compiler: clang++
+          - os: windows-2022
             package_generator: TBZ2
           - os: ubuntu-24.04
             cpp_compiler: cl
+          - os: ubuntu-24.04
             package_generator: ZIP
 
     steps:
