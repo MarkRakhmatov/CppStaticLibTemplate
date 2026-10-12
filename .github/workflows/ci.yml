@@ -223,8 +223,8 @@ jobs:
       if: matrix.package_generator != ''
       uses: actions/upload-artifact@v7
       with:
-        name: "package-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.generator}}"
-        path: build/*-Release-*.*
+        name: "package-${{matrix.os}}-${{matrix.cpp_compiler}}-${{matrix.build_type}}-${{matrix.generator}}"
+        path: build/*-${{matrix.build_type}}-*.*
 
     - name: Deploy Pages
       if: ${{ matrix.cpp_compiler == env.CLANG_COMPILER && matrix.build_type == 'Release' && github.ref_name == 'main' && github.event_name == 'push' }}
