@@ -264,4 +264,4 @@ jobs:
         tag_name: ${{ needs.prepare_new_version.outputs.version }}
         generate_release_notes: true
         files: |
-          packages/*/*-Release-*.*
+          packages/*/*-*-*.*
